@@ -21,8 +21,7 @@ public class KeywordParser implements Runnable{
 		// TODO Auto-generated method stub
 		
 		while(true){
-			//Naver, Daum parserÀÇ parseKeyword() ¸Ş¼­µå¸¦ È£Ãâ!
-			//-> ³×ÀÌ¹ö, ´ÙÀ½ÀÇ ½Ç½Ã°£ °Ë»ö¾î ¼öÁı ½ÃÀÛ!.
+			//NaverKeywordParser, DaumKeywordParserì˜ parserKeyword ë©”ì„œë“œë¥¼ í˜¸ì¶œí•©ë‹ˆë‹¤.
 			for(CommonKeywordParser keywordParser : keywordParsers){
 				keywordParser.parseKeyword();
 			}

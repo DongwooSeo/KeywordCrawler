@@ -16,7 +16,7 @@ public class RealtimeKeywordCrawler extends KeywordCrawler{
 	
 	private List<CommonKeywordParser> commonKeywordParsers = new ArrayList<CommonKeywordParser>();
 	
-	//NaverKeywordParser, DaumKeywordParser Ãß°¡
+	//NaverKeywordParser, DaumKeywordParser íŒŒì„œ ì¶”ê°€ !
 	public RealtimeKeywordCrawler(){
 		commonKeywordParsers.add(NaverKeywordParser.getInstance());
 		commonKeywordParsers.add(DaumKeywordParser.getInstance());
@@ -25,7 +25,7 @@ public class RealtimeKeywordCrawler extends KeywordCrawler{
 	public void run() {
 		// TODO Auto-generated method stub
 		
-		//Å°¿öµå ÆÄ¼­ ½ÃÀÛ!
+		//íŒŒì‹± ì‹œìž‘!
 		new Thread(new KeywordParser(commonKeywordParsers)).start();
 	}
 

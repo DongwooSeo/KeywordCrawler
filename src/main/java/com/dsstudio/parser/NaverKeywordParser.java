@@ -1,0 +1,107 @@
+package com.dsstudio.parser;
+
+import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import com.dsstudio.helper.DataCommon;
+import com.dsstudio.hibernate.dao.AgentDao;
+import com.dsstudio.hibernate.dao.AgentDaoImpl;
+import com.dsstudio.hibernate.dao.ParserDao;
+import com.dsstudio.hibernate.dao.ParserDaoImpl;
+import com.dsstudio.hibernate.dao.RealtimeKeywordDao;
+import com.dsstudio.hibernate.dao.RealtimeKeywordDaoImpl;
+import com.dsstudio.hibernate.model.Agent;
+import com.dsstudio.hibernate.model.AgentConfig;
+import com.dsstudio.hibernate.model.Parser;
+import com.dsstudio.hibernate.model.RealtimeKeyword;
+
+public class NaverKeywordParser extends CommonKeywordParser {
+	private static NaverKeywordParser naverKeywordParser = null;
+	
+	private AgentDao agentDao = new AgentDaoImpl();
+	private ParserDao parseDao = new ParserDaoImpl();
+	private RealtimeKeywordDao realtimeKeywordDao = new RealtimeKeywordDaoImpl();
+	
+	private Object lock = new Object();
+	
+	private NaverKeywordParser(){
+		super.agentId = 1;
+	}
+	
+	public static synchronized NaverKeywordParser getInstance(){
+		if(naverKeywordParser==null)
+			naverKeywordParser = new NaverKeywordParser();
+		
+		return naverKeywordParser;
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see com.dsstudio.parser.CommonKeywordParser#parseKeyword()
+	 * 각각의 Thread별 parseKeyword의 중복 참조를 방지하기 위해 lock 구현.
+	 */
+	public void parseKeyword() {
+		// TODO Auto-generated method stub
+		synchronized(lock){
+			Agent agent = agentDao.findById(super.getAgentId());
+			/*
+			 * isCrawl(agent) --> Multi-threads로 인한 중복 참조를 방지합니다.
+			 * 디비의 dateFinished 필드를 참조하여 참조 가능 여부를 판단합니다.
+			 */
+			if(super.isCrawl(agent)){
+				List<Parser> parsers = parseDao.findByAgentId(agent.getId());
+				AgentConfig agentConfig = agent.getAgentConfig();
+				
+				realtimeKeywordDao.deleteAllByAgentId(agent.getId());
+				
+				try {
+					Connection connection = Jsoup.connect(agentConfig.getUrl()).userAgent(agentConfig.getUserAgent());
+					Document document = connection.get();
+					Elements rtKeywordList = document.select(DataCommon.getValueBy("RtKeywordList", parsers));
+					
+					int rank = 1;
+					for(Element rtKeywordElem : rtKeywordList){
+						String name = rtKeywordElem.select(DataCommon.getValueBy("RtKeywordTitle", parsers)).text();
+						String step = rtKeywordElem.select(DataCommon.getValueBy("RtKeywordStep", parsers)).text();
+						String link = rtKeywordElem.select("a").first().attr("href");
+						
+						RealtimeKeyword realtimeKeyword = new RealtimeKeyword();
+						realtimeKeyword.setAgentId(super.getAgentId());
+						realtimeKeyword.setName(name);
+						realtimeKeyword.setLink(link);
+						realtimeKeyword.setRank(rank);
+						if(step.isEmpty()){
+							realtimeKeyword.setStep(0);
+						}else{
+							realtimeKeyword.setStep(Integer.parseInt(step));
+						}
+						realtimeKeyword.setCreatedTime(new Timestamp(new Date().getTime()));
+						realtimeKeyword.setUpdatedTime(new Timestamp(new Date().getTime()));
+						realtimeKeywordDao.persist(realtimeKeyword);
+						
+						rank++;
+					}
+					
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				List<String> links = new ArrayList<String>();
+				agent.setDateFinished(new Timestamp(new Date().getTime()));
+				agentDao.update(agent);
+			}
+			
+		}
+		
+	}
+
+}

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+	<class name="com.dsstudio.hibernate.model.Agent" table="Agent">
+	<id name="id" type="int">
+		<column name="Id"/>
+		<generator class="increment"/>
+	</id>
+	<property name="name" type="java.lang.String">
+		<column name="Name"/>
+	</property>
+	<property name="nameEng" type="java.lang.String">
+		<column name="NameEng"/>
+	</property>
+	<property name="isUsed" type="int">
+		<column name = "IsUsed"/>
+	</property>
+	<property name="hours" type="int">
+		<column name="Hours"/>
+	</property>
+	<property name="status" type="int">
+		<column name="Status"/>
+	</property>
+	<property name="dateFinished" type="timestamp">
+		<column name="DateFinished"/>
+	</property>
+	<one-to-one name="AgentConfig" class="com.dsstudio.hibernate.model.AgentConfig" cascade="save-update">
+		
+	</one-to-one>
+
+	</class>
+	
+	<class name="com.dsstudio.hibernate.model.AgentConfig" table="AgentConfig">
+		<id name="id" type="int">
+			<column name="Id"/>
+			<generator class="foreign">
+				<param name="property">stock</param>
+			</generator>
+		</id>
+		<one-to-one name="agent" class="com.dsstudio.hibernate.model.Agent"></one-to-one>
+		<property name="name" type="java.lang.String">
+			<column name="Name"/>
+		</property>
+		<property name="url" type="java.lang.String">
+			<column name = "Url"/>
+		</property>
+		<property name="searchQuery" type="java.lang.String">
+			<column name="SearchQuery"/>
+		</property>
+		<property name="userAgent" type="java.lang.String">
+			<column name="UserAgent"/>
+		</property>
+
+	</class>
+	
+	<class name="com.dsstudio.hibernate.model.Parser" table="Parser">
+		<id name="id" type="int">
+			<column name="Id"/>
+			<generator class="increment"/>
+		</id>
+		<property name="agentId" type="int">
+			<column name = "AgentId"/>
+		</property>
+		<property name="key" type="java.lang.String">
+			<column name="Key"/>
+		</property>
+		<property name="value" type="java.lang.String">
+			<column name="Value"/>
+		</property>
+	</class>
+	
+	<class name="com.dsstudio.hibernate.model.RealtimeKeyword" table="RealtimeKeyword">
+		<id name="id" type="int">
+			<column name="Id"/>
+			<generator class="increment"/>
+		</id>
+		<property name="agentId" type="int">
+			<column name = "AgentId"/>
+		</property>
+		<property name="name" type="java.lang.String">
+			<column name="Name"/>
+		</property>
+		<property name="link" type="java.lang.String">
+			<column name="Link"/>
+		</property>
+		<property name="rank" type="int">
+			<column name = "Rank"/>
+		</property>
+		<property name="step" type="int">
+			<column name = "Step"/>
+		</property>
+		<property name="createdTime" type="timestamp">
+			<column name="CreatedTime"/>
+		</property>
+		<property name="updatedTime" type="timestamp">
+			<column name="UpdatedTime"/>
+		</property>
+	</class>
+</hibernate-mapping>

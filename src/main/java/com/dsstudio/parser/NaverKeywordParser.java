@@ -47,15 +47,15 @@ public class NaverKeywordParser extends CommonKeywordParser {
 	/*
 	 * (non-Javadoc)
 	 * @see com.dsstudio.parser.CommonKeywordParser#parseKeyword()
-	 * °¢°¢ÀÇ Threadº° parseKeywordÀÇ Áßº¹ ÂüÁ¶¸¦ ¹æÁöÇÏ±â À§ÇØ lock ±¸Çö.
+	 * ê°ê° Threadì˜ í˜¸ì¶œë¡œ ì¸í•œ parseKeyword ì˜ ì¤‘ë³µ í˜¸ì¶œì„ ë§‰ê¸° ìœ„í•´ lock êµ¬í˜„.
 	 */
 	public void parseKeyword() {
 		// TODO Auto-generated method stub
 		synchronized(lock){
 			Agent agent = agentDao.findById(super.getAgentId());
 			/*
-			 * isCrawl(agent) --> Multi-threads·Î ÀÎÇÑ Áßº¹ ÂüÁ¶¸¦ ¹æÁöÇÕ´Ï´Ù.
-			 * µğºñÀÇ dateFinished ÇÊµå¸¦ ÂüÁ¶ÇÏ¿© ÂüÁ¶ °¡´É ¿©ºÎ¸¦ ÆÇ´ÜÇÕ´Ï´Ù.
+			 * isCrawl(agent) --> Multi-threadsì˜ í˜¸ì¶œë¡œ ë¶€í„°  parseKeywordì˜ ì¤‘ë³µ í˜¸ì¶œì„ ë§‰ê¸°ìœ„í•˜ì—¬
+			 * dbì˜ dateFinished í•„ë“œë¥¼ ì°¸ì¡°í•˜ì—¬ ì‹¤í–‰ ì—¬ë¶€ë¥¼ íŒë‹¨í•©ë‹ˆë‹¤.
 			 */
 			if(super.isCrawl(agent)){
 				List<Parser> parsers = parseDao.findByAgentId(agent.getId());

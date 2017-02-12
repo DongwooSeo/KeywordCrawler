@@ -24,7 +24,7 @@ import com.dsstudio.hibernate.model.AgentConfig;
 import com.dsstudio.hibernate.model.Parser;
 import com.dsstudio.hibernate.model.RealtimeKeyword;
 
-public class DaumKeywordParser extends CommonKeywordParser {
+public class DaumKeywordParser extends AgentKeywordParser {
 	private static DaumKeywordParser daumKeywordParser=null;
 	
 	private ParserDao parseDao = new ParserDaoImpl();
@@ -61,13 +61,15 @@ public class DaumKeywordParser extends CommonKeywordParser {
 					int rank = 1;
 					for(Element rtKeywordElem : rtKeywordList){
 						Element elem = rtKeywordElem.select("a").first();
+						
+						String link = elem.attr("href");
 						String name = elem.text();
 						String step = rtKeywordElem.select(DataCommon.getValueBy("RtKeywordStep", parsers)).first().ownText();
 						
 						RealtimeKeyword realtimeKeyword = new RealtimeKeyword();
 						realtimeKeyword.setAgentId(super.getAgentId());
 						realtimeKeyword.setName(name);
-						realtimeKeyword.setLink(elem.attr("href"));
+						realtimeKeyword.setLink(link);
 						realtimeKeyword.setRank(rank);
 						
 						if(step.isEmpty()){
@@ -77,9 +79,8 @@ public class DaumKeywordParser extends CommonKeywordParser {
 						}
 						realtimeKeyword.setCreatedTime(new Timestamp(new Date().getTime()));
 						realtimeKeyword.setUpdatedTime(new Timestamp(new Date().getTime()));
-						realtimeKeywordDao.persist(realtimeKeyword);
-						
-						
+						realtimeKeywordDao.save(realtimeKeyword);
+						saveKeywordLinkQueue(link);
 						rank++;
 					}
 					

@@ -24,7 +24,7 @@ import com.dsstudio.hibernate.model.AgentConfig;
 import com.dsstudio.hibernate.model.Parser;
 import com.dsstudio.hibernate.model.RealtimeKeyword;
 
-public class NaverKeywordParser extends CommonKeywordParser {
+public class NaverKeywordParser extends AgentKeywordParser {
 	private static NaverKeywordParser naverKeywordParser = null;
 	
 	private AgentDao agentDao = new AgentDaoImpl();
@@ -86,7 +86,9 @@ public class NaverKeywordParser extends CommonKeywordParser {
 						}
 						realtimeKeyword.setCreatedTime(new Timestamp(new Date().getTime()));
 						realtimeKeyword.setUpdatedTime(new Timestamp(new Date().getTime()));
-						realtimeKeywordDao.persist(realtimeKeyword);
+						realtimeKeywordDao.save(realtimeKeyword);
+						saveKeywordLinkQueue(link);
+						
 						
 						rank++;
 					}

@@ -98,4 +98,32 @@
 			<column name="UpdatedTime"/>
 		</property>
 	</class>
+	
+	<class name="com.dsstudio.hibernate.model.KeywordLinkQueue" table="KeywordLinkQueue">
+		<id name="id" type="int">
+			<column name="Id"/>
+			<generator class="increment"/>
+		</id>
+		<property name="link" type="java.lang.String">
+			<column name="Link"/>
+		</property>
+		<property name="batchId" type="java.lang.String">
+			<column name="BatchId"/>
+		</property>
+		<property name="status" type="int">
+			<column name = "Status"/>
+		</property>
+		<property name="dateCreated" type="timestamp">
+			<column name="DateCreated"/>
+		</property>
+		<property name="booking" type="java.lang.String">
+			<column name="Booking"/>
+		</property>
+		<property name="bookingDate" type="timestamp">
+			<column name="BookingDate"/>
+		</property>
+		<property name="agentIndex" type="int">
+			<column name = "AgentIndex"/>
+		</property>
+	</class>
 </hibernate-mapping>

@@ -31,8 +31,7 @@ public class RealtimeKeywordDaoImpl extends AbstractDao<Integer, RealtimeKeyword
 		return realtimeKeyword;
 	}
 	
-	@Override
-	public void persist(RealtimeKeyword entity) {
+	public void save(RealtimeKeyword entity) {
 		// TODO Auto-generated method stub
 		super.persist(entity);
 	}

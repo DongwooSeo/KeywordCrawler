@@ -34,15 +34,4 @@ public class KeywordParser implements Runnable{
 		}
 		
 	}
-	/*
-	public static void main(String[] args){
-		List<ICommonKeywordParser> commonKeywordParsers = new ArrayList<ICommonKeywordParser>();
-		commonKeywordParsers.add(new NaverKeywordParser());
-		commonKeywordParsers.add(new DaumKeywordParser());
-	
-		for(int i=0; i<commonKeywordParsers.size(); i++){
-			new Thread(new KeywordParser(commonKeywordParsers),"ParserThread-"+i).start();
-		}
-		
-	}*/
 }

@@ -26,16 +26,11 @@ import com.dsstudio.hibernate.model.RealtimeKeyword;
 
 public class DaumKeywordParser extends AgentKeywordParser {
 	private static DaumKeywordParser daumKeywordParser=null;
-	
-	private ParserDao parseDao = new ParserDaoImpl();
-	private AgentDao agentDao = new AgentDaoImpl();
-	
-	private RealtimeKeywordDao realtimeKeywordDao = new RealtimeKeywordDaoImpl();
-	
 	private Object lock = new Object();
 	
 	private DaumKeywordParser(){
-		super.agentId=2;
+		super.agentId = 2;
+		super.agentName = "다음";
 	}
 	
 	public static synchronized DaumKeywordParser getInstance(){
@@ -45,9 +40,11 @@ public class DaumKeywordParser extends AgentKeywordParser {
 	}
 	public void parseKeyword() {
 		synchronized(lock){
+			
 			// TODO Auto-generated method stub
 			Agent agent = agentDao.findById(super.getAgentId());
 			if(super.isCrawl(agent)){
+				System.out.println(Thread.currentThread().getName()+" | " + super.agentName + " " + "파싱중....");
 				List<Parser> parsers = parseDao.findByAgentId(agent.getId());
 				AgentConfig agentConfig = agent.getAgentConfig();
 
@@ -91,7 +88,7 @@ public class DaumKeywordParser extends AgentKeywordParser {
 				List<String> links = new ArrayList<String>();
 				agent.setDateFinished(new Timestamp(new Date().getTime()));
 				agentDao.update(agent);
-				
+				System.out.println(Thread.currentThread().getName()+" | " + super.agentName + " " + "파싱 성공!!");
 				}
 		}
 	}

@@ -5,14 +5,23 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
+import com.dsstudio.hibernate.dao.AgentDao;
+import com.dsstudio.hibernate.dao.AgentDaoImpl;
 import com.dsstudio.hibernate.dao.KeywordLinkQueueDao;
 import com.dsstudio.hibernate.dao.KeywordLinkQueueDaoImpl;
+import com.dsstudio.hibernate.dao.ParserDao;
+import com.dsstudio.hibernate.dao.ParserDaoImpl;
+import com.dsstudio.hibernate.dao.RealtimeKeywordDao;
+import com.dsstudio.hibernate.dao.RealtimeKeywordDaoImpl;
 import com.dsstudio.hibernate.model.Agent;
 import com.dsstudio.hibernate.model.KeywordLinkQueue;
 
 public class AgentKeywordParser extends CommonKeywordParser {
 	protected int agentId;
-	protected KeywordLinkQueueDao keywordLinkQueueDao = new KeywordLinkQueueDaoImpl();
+	protected String agentName;
+	protected AgentDao agentDao = new AgentDaoImpl();
+	protected ParserDao parseDao = new ParserDaoImpl();
+	protected RealtimeKeywordDao realtimeKeywordDao = new RealtimeKeywordDaoImpl();
 	
 	protected void setAgentId(int agentId) {
 		this.agentId = agentId;
@@ -48,7 +57,7 @@ public class AgentKeywordParser extends CommonKeywordParser {
 			}else{
 				Calendar cal = Calendar.getInstance();
 				cal.setTime(new Date());
-				cal.add(Calendar.HOUR, -1 * agent.getHours());
+				cal.add(Calendar.MINUTE, -1 * agent.getMinutes());
 				if(new Timestamp(cal.getTime().getTime()).after(agent.getDateFinished())){
 					isCrawl = true;
 				}

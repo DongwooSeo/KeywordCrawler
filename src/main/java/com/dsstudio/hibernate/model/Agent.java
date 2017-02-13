@@ -7,7 +7,7 @@ public class Agent {
 	private String name;
 	private String nameEng;
 	private int	isUsed;
-	private int hours;
+	private int minutes;
 	private int status;
 	private Timestamp dateFinished;
 	
@@ -38,11 +38,11 @@ public class Agent {
 	public void setIsUsed(int isUsed) {
 		this.isUsed = isUsed;
 	}
-	public int getHours() {
-		return hours;
+	public int getMinutes() {
+		return minutes;
 	}
-	public void setHours(int hours) {
-		this.hours = hours;
+	public void setMinutes(int minutes) {
+		this.minutes = minutes;
 	}
 	public int getStatus() {
 		return status;

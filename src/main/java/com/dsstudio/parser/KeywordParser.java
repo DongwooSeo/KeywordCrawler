@@ -19,10 +19,11 @@ public class KeywordParser implements Runnable{
 	
 	public void run() {
 		// TODO Auto-generated method stub
-		
+		System.out.println(Thread.currentThread().getName()+" 크롤링 시작");
 		while(true){
 			//NaverKeywordParser, DaumKeywordParser의 parserKeyword 메서드를 호출합니다.
 			for(CommonKeywordParser keywordParser : keywordParsers){
+				System.out.println(Thread.currentThread()+" 작동중");
 				keywordParser.parseKeyword();
 			}
 			try {

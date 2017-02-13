@@ -26,15 +26,11 @@ import com.dsstudio.hibernate.model.RealtimeKeyword;
 
 public class NaverKeywordParser extends AgentKeywordParser {
 	private static NaverKeywordParser naverKeywordParser = null;
-	
-	private AgentDao agentDao = new AgentDaoImpl();
-	private ParserDao parseDao = new ParserDaoImpl();
-	private RealtimeKeywordDao realtimeKeywordDao = new RealtimeKeywordDaoImpl();
-	
 	private Object lock = new Object();
 	
 	private NaverKeywordParser(){
 		super.agentId = 1;
+		super.agentName = "네이버";
 	}
 	
 	public static synchronized NaverKeywordParser getInstance(){
@@ -52,12 +48,14 @@ public class NaverKeywordParser extends AgentKeywordParser {
 	public void parseKeyword() {
 		// TODO Auto-generated method stub
 		synchronized(lock){
+			
 			Agent agent = agentDao.findById(super.getAgentId());
 			/*
 			 * isCrawl(agent) --> Multi-threads의 호출로 부터  parseKeyword의 중복 호출을 막기위하여
 			 * db의 dateFinished 필드를 참조하여 실행 여부를 판단합니다.
 			 */
 			if(super.isCrawl(agent)){
+				System.out.println(Thread.currentThread().getName()+" | " + super.agentName + " " + "파싱중....");
 				List<Parser> parsers = parseDao.findByAgentId(agent.getId());
 				AgentConfig agentConfig = agent.getAgentConfig();
 				
@@ -100,6 +98,7 @@ public class NaverKeywordParser extends AgentKeywordParser {
 				List<String> links = new ArrayList<String>();
 				agent.setDateFinished(new Timestamp(new Date().getTime()));
 				agentDao.update(agent);
+				System.out.println(Thread.currentThread().getName()+" | " + super.agentName + " " + "파싱 성공!!");
 			}
 			
 		}

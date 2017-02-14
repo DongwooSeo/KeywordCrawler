@@ -1,6 +1,10 @@
 package com.dsstudio.hibernate.dao;
 
+import java.util.List;
+
 import org.hibernate.Criteria;
+import org.hibernate.Query;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
 import com.dsstudio.hibernate.model.Agent;
@@ -25,25 +29,21 @@ public class AgentDaoImpl extends AbstractDao<Integer, Agent> implements AgentDa
     	super.update(entity);
     }
 	
-	public static void main(String[] args){
-		/*
-		AgentDao dao = new AgentDaoImpl();
+	public Agent fetchFirstRow() {
+		// TODO Auto-generated method stub
+		Transaction tx = getSession().beginTransaction();
+		Query query = getSession().createSQLQuery("select * from Agent where DateFinished + INTERVAL Minutes MINUTE < now() and Status = 3 order by DateFinished").addEntity(Agent.class);
 		
-		Agent agent = dao.findByIndex(1);
-		System.out.println(String.format(agent.getAgentConfig().getSearchQuery(), "test"));
+		List<Agent> result = query.list();
+		Agent agent = null;
 		
+		if(!result.isEmpty()){
+			agent = result.get(0);
+			//System.out.println(agent.getName());	
+		}
 		
-		Timestamp timestamp = new Timestamp(new Date().getTime());
-		agent.setDateFinished(timestamp);
-		dao.update(agent);
-		*/
-		/*
-		Calendar c1 = Calendar.getInstance();
-		c1.setTime(new Date());
-		c1.add(Calendar.HOUR, -1*3);
-		Timestamp timestamp = new Timestamp(c1.getTime().getTime());
-		System.out.println(timestamp.after(null));*/
-		
-	
+		tx.commit();
+		//System.out.println(agent.getName());
+		return agent;
 	}
 }

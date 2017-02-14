@@ -30,4 +30,10 @@ public class BasicKeywordParser extends CommonKeywordParser{
 		return false;
 	}
 
+	@Override
+	protected int getAgentId() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

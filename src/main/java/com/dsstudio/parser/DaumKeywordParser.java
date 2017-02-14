@@ -25,73 +25,75 @@ import com.dsstudio.hibernate.model.Parser;
 import com.dsstudio.hibernate.model.RealtimeKeyword;
 
 public class DaumKeywordParser extends AgentKeywordParser {
-	private static DaumKeywordParser daumKeywordParser=null;
+	//private static DaumKeywordParser daumKeywordParser = null;
 	private Object lock = new Object();
-	
-	private DaumKeywordParser(){
+
+	public DaumKeywordParser() {
 		super.agentId = 2;
 		super.agentName = "다음";
 	}
 	
-	public static synchronized DaumKeywordParser getInstance(){
-		if(daumKeywordParser==null)
+	/*
+	public static synchronized DaumKeywordParser getInstance() {
+		if (daumKeywordParser == null)
 			daumKeywordParser = new DaumKeywordParser();
 		return daumKeywordParser;
 	}
+	*/
+
 	public void parseKeyword() {
-		synchronized(lock){
-			
-			// TODO Auto-generated method stub
-			Agent agent = agentDao.findById(super.getAgentId());
-			if(super.isCrawl(agent)){
-				System.out.println(Thread.currentThread().getName()+" | " + super.agentName + " " + "파싱중....");
-				List<Parser> parsers = parseDao.findByAgentId(agent.getId());
-				AgentConfig agentConfig = agent.getAgentConfig();
 
-				realtimeKeywordDao.deleteAllByAgentId(agent.getId());
-				
-				try {
-					Connection connection = Jsoup.connect(agentConfig.getUrl()).userAgent(agentConfig.getUserAgent());
-					Document document = connection.get();
-					Elements rtKeywordList = document.select(DataCommon.getValueBy("RtKeywordList", parsers));
-					
-					int rank = 1;
-					for(Element rtKeywordElem : rtKeywordList){
-						Element elem = rtKeywordElem.select("a").first();
-						
-						String link = elem.attr("href");
-						String name = elem.text();
-						String step = rtKeywordElem.select(DataCommon.getValueBy("RtKeywordStep", parsers)).first().ownText();
-						
-						RealtimeKeyword realtimeKeyword = new RealtimeKeyword();
-						realtimeKeyword.setAgentId(super.getAgentId());
-						realtimeKeyword.setName(name);
-						realtimeKeyword.setLink(link);
-						realtimeKeyword.setRank(rank);
-						
-						if(step.isEmpty()){
-							realtimeKeyword.setStep(0);
-						}else{
-							realtimeKeyword.setStep(Integer.parseInt(step));
-						}
-						realtimeKeyword.setCreatedTime(new Timestamp(new Date().getTime()));
-						realtimeKeyword.setUpdatedTime(new Timestamp(new Date().getTime()));
-						realtimeKeywordDao.save(realtimeKeyword);
-						saveKeywordLinkQueue(link);
-						rank++;
-					}
-					
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+		// TODO Auto-generated method stub
+		Agent agent = agentDao.findById(super.getAgentId());
+		AgentConfig agentConfig = agent.getAgentConfig();
+
+		List<Parser> parsers = parseDao.findByAgentId(agent.getId());
+		List<RealtimeKeyword> realtimeKeywords = new ArrayList<RealtimeKeyword>();
+		realtimeKeywordDao.deleteAllByAgentId(agent.getId());
+		
+		System.out.println(Thread.currentThread().getName() + " | " + super.agentName + " " + "파싱중....");
+
+		try {
+			Connection connection = Jsoup.connect(agentConfig.getUrl()).userAgent(agentConfig.getUserAgent());
+			Document document = connection.get();
+			Elements rtKeywordList = document.select(DataCommon.getValueBy("RtKeywordList", parsers));
+
+			int rank = 1;
+			for (Element rtKeywordElem : rtKeywordList) {
+				Element elem = rtKeywordElem.select("a").first();
+
+				String link = elem.attr("href");
+				String name = elem.text();
+				String step = rtKeywordElem.select(DataCommon.getValueBy("RtKeywordStep", parsers)).first().ownText();
+
+				RealtimeKeyword realtimeKeyword = new RealtimeKeyword();
+				realtimeKeyword.setAgentId(super.getAgentId());
+				realtimeKeyword.setName(name);
+				realtimeKeyword.setLink(link);
+				realtimeKeyword.setRank(rank);
+
+				if (step.isEmpty()) {
+					realtimeKeyword.setStep(0);
+				} else {
+					realtimeKeyword.setStep(Integer.parseInt(step));
 				}
-				List<String> links = new ArrayList<String>();
-				agent.setDateFinished(new Timestamp(new Date().getTime()));
-				agentDao.update(agent);
-				System.out.println(Thread.currentThread().getName()+" | " + super.agentName + " " + "파싱 성공!!");
-				}
+				realtimeKeyword.setCreatedTime(new Timestamp(new Date().getTime()));
+				realtimeKeyword.setUpdatedTime(new Timestamp(new Date().getTime()));
+				realtimeKeywords.add(realtimeKeyword);
+				saveKeywordLinkQueue(link);
+				rank++;
+			}
+			realtimeKeywordDao.saveAll(realtimeKeywords);
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-	}
+		List<String> links = new ArrayList<String>();
+		// agent.setDateFinished(new Timestamp(new Date().getTime()));
+		// agentDao.update(agent);
+		System.out.println(Thread.currentThread().getName() + " | " + super.agentName + " " + "파싱 성공!!");
 
+	}
 
 }

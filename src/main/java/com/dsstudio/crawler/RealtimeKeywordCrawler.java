@@ -18,8 +18,8 @@ public class RealtimeKeywordCrawler extends KeywordCrawler{
 	
 	//NaverKeywordParser, DaumKeywordParser 파서 추가 !
 	public RealtimeKeywordCrawler(){
-		commonKeywordParsers.add(NaverKeywordParser.getInstance());
-		commonKeywordParsers.add(DaumKeywordParser.getInstance());
+		commonKeywordParsers.add(new NaverKeywordParser());
+		commonKeywordParsers.add(new DaumKeywordParser());
 	}
 	
 	public void run() {

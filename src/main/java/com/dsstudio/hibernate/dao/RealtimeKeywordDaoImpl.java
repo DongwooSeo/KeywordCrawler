@@ -3,6 +3,7 @@ package com.dsstudio.hibernate.dao;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
@@ -36,6 +37,20 @@ public class RealtimeKeywordDaoImpl extends AbstractDao<Integer, RealtimeKeyword
 		super.persist(entity);
 	}
 	
+	public void saveAll(List<RealtimeKeyword> realtimeKeywords){
+		Session session = getSession();
+		Transaction tx = session.beginTransaction();
+		
+		for(int i=0; i<realtimeKeywords.size(); i++){
+			RealtimeKeyword realtimeKeyword = realtimeKeywords.get(i);
+			session.save(realtimeKeyword);
+			if(i%realtimeKeywords.size()-1==0){
+				session.flush();
+				session.clear();
+			}		
+		}
+		tx.commit();
+	}
 	@Override
     public void update(RealtimeKeyword entity) {
     	// TODO Auto-generated method stub

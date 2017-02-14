@@ -51,6 +51,7 @@ public class AgentKeywordParser extends CommonKeywordParser {
 	protected boolean isCrawl(Agent agent){
 		boolean isCrawl = false;
 		
+		/*
 		if(agent!=null){
 			if(agent.getDateFinished()==null){
 				isCrawl = true;
@@ -63,6 +64,7 @@ public class AgentKeywordParser extends CommonKeywordParser {
 				}
 			}
 		}
+		*/
 		return isCrawl;
 	}
 

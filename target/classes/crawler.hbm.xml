@@ -104,7 +104,7 @@
 			<column name="Id"/>
 			<generator class="increment"/>
 		</id>
-		<property name="link" type="java.lang.String">
+		<property name="link" type="java.lang.String" unique="true">
 			<column name="Link"/>
 		</property>
 		<property name="batchId" type="java.lang.String">
@@ -124,6 +124,60 @@
 		</property>
 		<property name="agentIndex" type="int">
 			<column name = "AgentIndex"/>
+		</property>
+	</class>
+	
+	<class name="com.dsstudio.hibernate.model.Keyword" table="Keyword">
+		<id name="id" type="int">
+			<column name="Id"/>
+			<generator class="increment"/>
+		</id>
+		<property name="keywordMainId" type="int">
+			<column name = "KeywordMainId"/>
+		</property>
+		<property name="agentId" type="int">
+			<column name = "AgentId"/>
+		</property>
+		<property name="name" type="java.lang.String">
+			<column name="Name"/>
+		</property>
+		<property name="link" type="java.lang.String">
+			<column name="Link"/>
+		</property>
+		<property name="dateCreated" type="timestamp">
+			<column name="DateCreated"/>
+		</property>
+		<property name="dateUpdated" type="timestamp">
+			<column name="DateUpdated"/>
+		</property>
+	</class>
+	
+	<class name="com.dsstudio.hibernate.model.KeywordMain" table="KeywordMain">
+		<id name="id" type="int">
+			<column name="Id"/>
+			<generator class="increment"/>
+		</id>
+		<property name="name" type="java.lang.String" unique="true">
+			<column name="Name"/>
+		</property>
+		<property name="dateCreated" type="timestamp">
+			<column name="DateCreated"/>
+		</property>
+		<property name="dateUpdated" type="timestamp">
+			<column name="DateUpdated"/>
+		</property>
+	</class>
+	
+	<class name="com.dsstudio.hibernate.model.RelatedKeywordLink" table="RelatedKeywordLink">
+		<id name="id" type="int">
+			<column name="Id"/>
+			<generator class="increment"/>
+		</id>
+		<property name="keywordId" type="int">
+			<column name = "KeywordId"/>
+		</property>
+		<property name="relatedId" type="int">
+			<column name = "RelatedId"/>
 		</property>
 	</class>
 </hibernate-mapping>

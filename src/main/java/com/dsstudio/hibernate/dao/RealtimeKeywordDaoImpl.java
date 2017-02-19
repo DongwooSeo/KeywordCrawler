@@ -7,7 +7,6 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
-import com.dsstudio.hibernate.model.Parser;
 import com.dsstudio.hibernate.model.RealtimeKeyword;
 
 public class RealtimeKeywordDaoImpl extends AbstractDao<Integer, RealtimeKeyword> implements RealtimeKeywordDao{

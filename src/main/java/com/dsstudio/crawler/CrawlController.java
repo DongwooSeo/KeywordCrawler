@@ -67,18 +67,55 @@ public class CrawlController extends Configurable{
 				
 			}
 			
-			final CrawlController controller = this;
-			final CrawlConfig config = this.getConfig();
+			//final CrawlController controller = this;
+			//final CrawlConfig config = this.getConfig();
+			/*
+			Thread monitorThread = new Thread(new Runnable(){
+
+				public void run() {
+					// TODO Auto-generated method stub
+					try{
+						synchronized(waitingLock){
+							while(true){
+								sleep(config.getThreadMonitoringDelaySeconds());
+								boolean someoneIsWorking = false;
+								for(int i = 0; i < threads.size(); i++){
+									Thread thread = threads.get(i);
+									if(!thread.isAlive()){
+										 logger.info("Thread {} was dead, I'll recreate it", i);
+                                         T crawler = crawlerFactory.newInstance();
+                                         thread = new Thread(crawler, "Crawler " + (i + 1));
+                                         threads.remove(i);
+                                         threads.add(i, thread);
+                                         crawler.setThread(thread);
+                                         crawler.init(i + 1, controller);
+                                         thread.start();
+                                         crawlers.remove(i);
+                                         crawlers.add(i, crawler);
+									}
+								}
+								waitingLock.notifyAll();
+							}
+						}
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+				
+			});
 			
-			
+			monitorThread.start();
+			*/
 			if(isBlocking){
 				waitUntilFinish();
 			}
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+	
 	}
-
+	
+	
 	public void waitUntilFinish() {
 		// TODO Auto-generated method stub
 		while(!finished){

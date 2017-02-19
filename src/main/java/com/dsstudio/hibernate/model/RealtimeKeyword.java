@@ -12,7 +12,6 @@ public class RealtimeKeyword {
 	private Timestamp createdTime;
 	private Timestamp updatedTime;
 	
-	
 	public int getId() {
 		return id;
 	}

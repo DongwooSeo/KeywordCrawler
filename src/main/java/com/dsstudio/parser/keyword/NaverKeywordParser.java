@@ -1,4 +1,4 @@
-package com.dsstudio.parser;
+package com.dsstudio.parser.keyword;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -13,36 +13,23 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.dsstudio.helper.DataCommon;
-import com.dsstudio.hibernate.dao.AgentDao;
-import com.dsstudio.hibernate.dao.AgentDaoImpl;
-import com.dsstudio.hibernate.dao.ParserDao;
-import com.dsstudio.hibernate.dao.ParserDaoImpl;
-import com.dsstudio.hibernate.dao.RealtimeKeywordDao;
-import com.dsstudio.hibernate.dao.RealtimeKeywordDaoImpl;
 import com.dsstudio.hibernate.model.Agent;
 import com.dsstudio.hibernate.model.AgentConfig;
 import com.dsstudio.hibernate.model.Parser;
 import com.dsstudio.hibernate.model.RealtimeKeyword;
 
-public class DaumKeywordParser extends AgentKeywordParser {
-	//private static DaumKeywordParser daumKeywordParser = null;
-	private Object lock = new Object();
+public class NaverKeywordParser extends AgentKeywordParser {
 
-	public DaumKeywordParser() {
-		super.agentId = 2;
-		super.agentName = "다음";
+	public NaverKeywordParser() {
+		super.agentId = 1;
+		super.agentName = "네이버";
 	}
-	
+
 	/*
-	public static synchronized DaumKeywordParser getInstance() {
-		if (daumKeywordParser == null)
-			daumKeywordParser = new DaumKeywordParser();
-		return daumKeywordParser;
-	}
-	*/
-
-	public void parseKeyword() {
-
+	 * (네이버 실시간 키워드를 파싱합니다.)
+	 * @see com.dsstudio.parser.keyword.AgentKeywordParser#parseRealtimeKeyword()
+	 */
+	public void parseRealtimeKeyword() {
 		// TODO Auto-generated method stub
 		Agent agent = agentDao.findById(super.getAgentId());
 		AgentConfig agentConfig = agent.getAgentConfig();
@@ -50,8 +37,8 @@ public class DaumKeywordParser extends AgentKeywordParser {
 		List<Parser> parsers = parseDao.findByAgentId(agent.getId());
 		List<RealtimeKeyword> realtimeKeywords = new ArrayList<RealtimeKeyword>();
 		realtimeKeywordDao.deleteAllByAgentId(agent.getId());
-		
-		System.out.println(Thread.currentThread().getName() + " | " + super.agentName + " " + "파싱중....");
+
+		System.out.println(Thread.currentThread().getName() + " | " + super.agentName + " " + "실시간 키워드 파싱중....");
 
 		try {
 			Connection connection = Jsoup.connect(agentConfig.getUrl()).userAgent(agentConfig.getUserAgent());
@@ -60,18 +47,15 @@ public class DaumKeywordParser extends AgentKeywordParser {
 
 			int rank = 1;
 			for (Element rtKeywordElem : rtKeywordList) {
-				Element elem = rtKeywordElem.select("a").first();
-
-				String link = elem.attr("href");
-				String name = elem.text();
-				String step = rtKeywordElem.select(DataCommon.getValueBy("RtKeywordStep", parsers)).first().ownText();
+				String name = rtKeywordElem.select(DataCommon.getValueBy("RtKeywordTitle", parsers)).text();
+				String step = rtKeywordElem.select(DataCommon.getValueBy("RtKeywordStep", parsers)).text();
+				String link = rtKeywordElem.select("a").first().attr("href");
 
 				RealtimeKeyword realtimeKeyword = new RealtimeKeyword();
 				realtimeKeyword.setAgentId(super.getAgentId());
 				realtimeKeyword.setName(name);
 				realtimeKeyword.setLink(link);
 				realtimeKeyword.setRank(rank);
-
 				if (step.isEmpty()) {
 					realtimeKeyword.setStep(0);
 				} else {
@@ -80,20 +64,16 @@ public class DaumKeywordParser extends AgentKeywordParser {
 				realtimeKeyword.setCreatedTime(new Timestamp(new Date().getTime()));
 				realtimeKeyword.setUpdatedTime(new Timestamp(new Date().getTime()));
 				realtimeKeywords.add(realtimeKeyword);
-				saveKeywordLinkQueue(link);
+				// realtimeKeywordDao.save(realtimeKeyword);
+				saveKeywordLinkQueue(link, agent.getId());
 				rank++;
 			}
 			realtimeKeywordDao.saveAll(realtimeKeywords);
-
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		List<String> links = new ArrayList<String>();
-		// agent.setDateFinished(new Timestamp(new Date().getTime()));
-		// agentDao.update(agent);
-		System.out.println(Thread.currentThread().getName() + " | " + super.agentName + " " + "파싱 성공!!");
-
+		System.out.println(Thread.currentThread().getName() + " | " + super.agentName + " " + "실시간 키워드 파싱 성공!!");
 	}
 
 }

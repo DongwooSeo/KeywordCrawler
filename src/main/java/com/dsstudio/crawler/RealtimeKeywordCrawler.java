@@ -6,10 +6,10 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dsstudio.parser.CommonKeywordParser;
-import com.dsstudio.parser.DaumKeywordParser;
-import com.dsstudio.parser.KeywordParser;
-import com.dsstudio.parser.NaverKeywordParser;
+import com.dsstudio.parser.keyword.CommonKeywordParser;
+import com.dsstudio.parser.keyword.DaumKeywordParser;
+import com.dsstudio.parser.keyword.RealtimeKeywordParser;
+import com.dsstudio.parser.keyword.NaverKeywordParser;
 
 public class RealtimeKeywordCrawler extends KeywordCrawler{
 	static final Logger logger = LoggerFactory.getLogger(RealtimeKeywordCrawler.class);
@@ -26,7 +26,7 @@ public class RealtimeKeywordCrawler extends KeywordCrawler{
 		// TODO Auto-generated method stub
 		
 		//파싱 시작!
-		new Thread(new KeywordParser(commonKeywordParsers)).start();
+		new Thread(new RealtimeKeywordParser(commonKeywordParsers)).start();
 	}
 
 }

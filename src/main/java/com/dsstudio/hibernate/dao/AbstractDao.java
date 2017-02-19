@@ -34,7 +34,12 @@ public abstract class AbstractDao <PK extends Serializable, T>{
 	public void persist(T entity){
 		Transaction tx = getSession().beginTransaction();
 		getSession().persist(entity);
-		tx.commit();
+		try{
+			tx.commit();
+		}catch(Exception e){
+			tx.rollback();
+		}
+		
 	}
 	
 	public void update(T entity){

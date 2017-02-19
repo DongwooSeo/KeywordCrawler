@@ -10,7 +10,7 @@
 		<property name="hibernate.connection.username">trenbe</property>
 		<property name="hibernate.connection.password">hoon7080</property>
 		<!-- Connection Pool Size -->
-		<property name="hibernate.connection.pool_size">5</property>
+		<property name="hibernate.connection.pool_size">10</property>
 		
 		<!-- org.hibernate.HibernateException: No CurrentSessionContext configured! -->
 		<property name="hibernate.current_session_context_class">thread</property>

@@ -43,7 +43,7 @@ public class AgentKeywordParser extends CommonKeywordParser {
 	protected KeywordDao keywordDao = new KeywordDaoImpl();
 	protected KeywordMainDao keywordMainDao = new KeywordMainDaoImpl();
 	protected KeywordLinkQueueDao keywordLinkQueueDao = new KeywordLinkQueueDaoImpl();
-	protected RelatedKeywordLinkDao relatedKeywordDao = new RelatedKeywordLinkDaoImpl();
+	protected RelatedKeywordLinkDao relatedKeywordLinkDao = new RelatedKeywordLinkDaoImpl();
 	protected RealtimeKeywordDao realtimeKeywordDao = new RealtimeKeywordDaoImpl();
 
 	protected void setAgentId(int agentId) {
@@ -78,7 +78,10 @@ public class AgentKeywordParser extends CommonKeywordParser {
 	/*
 	 * (네이버 및 다음 agent 가 공통적으로 사용하는 메서드로, 키워드 검색 후 나오는 페이지를 파싱합니다. +연관검색어 포함)
 	 * (상세페이지의 DOM객체는 DB, Parser 테이블에 agent별로 각각 저장됩니다.)
-	 * @see com.dsstudio.parser.keyword.CommonKeywordParser#parseKeyword(com.dsstudio.hibernate.model.KeywordLinkQueue)
+	 * 
+	 * @see
+	 * com.dsstudio.parser.keyword.CommonKeywordParser#parseKeyword(com.dsstudio
+	 * .hibernate.model.KeywordLinkQueue)
 	 */
 	@Override
 	protected void parseKeyword(KeywordLinkQueue keywordLinkQueue) {
@@ -109,10 +112,14 @@ public class AgentKeywordParser extends CommonKeywordParser {
 
 				int relatedKeywordId = upsertKeyword(title, link);
 				if (relatedKeywordId != 0) {
-					RelatedKeywordLink relatedKeywordLink = new RelatedKeywordLink();
-					relatedKeywordLink.setKeywordId(keywordId);
-					relatedKeywordLink.setRelatedId(relatedKeywordId);
-					relatedKeywordDao.save(relatedKeywordLink);
+					RelatedKeywordLink entityRelatedKeywordLink = relatedKeywordLinkDao
+							.findByKeywordAndRelatedId(keywordId, relatedKeywordId);
+					if (entityRelatedKeywordLink == null) {
+						RelatedKeywordLink relatedKeywordLink = new RelatedKeywordLink();
+						relatedKeywordLink.setKeywordId(keywordId);
+						relatedKeywordLink.setRelatedId(relatedKeywordId);
+						relatedKeywordLinkDao.save(relatedKeywordLink);
+					}
 				}
 				/*
 				 * linkQueue에 작업을 추가합니다. 수집할 대상의 추가!
@@ -126,11 +133,10 @@ public class AgentKeywordParser extends CommonKeywordParser {
 		}
 		System.out.println(agent.getName() + " 키워드 파싱 완료!!");
 	}
-	
+
 	/*
-	 * 검색어가 현재 디비에 있는 경우 업데이트하며 없을 경우 키워드를 저장합니다.
-	 * KeywordMain(indexing table), Keyword(Agent별 키워드), RelatedKeywordLink(연관 검색어 저장)
-	 * 테이블에 각각 저장 및 업데이트 됩니다.
+	 * 검색어가 현재 디비에 있는 경우 업데이트하며 없을 경우 키워드를 저장합니다. KeywordMain(indexing table),
+	 * Keyword(Agent별 키워드), RelatedKeywordLink(연관 검색어 저장) 테이블에 각각 저장 및 업데이트 됩니다.
 	 */
 	private int upsertKeyword(String keywordName, String link) {
 		KeywordMain entityKeywordMain = keywordMainDao.findByName(keywordName);

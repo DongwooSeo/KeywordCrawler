@@ -26,6 +26,17 @@ public class RelatedKeywordLinkDaoImpl extends AbstractDao<Integer, RelatedKeywo
 		return relatedKeywordLink;
 	}
 	
+	public RelatedKeywordLink findByKeywordAndRelatedId(int keywordId, int relatedId) {
+		// TODO Auto-generated method stub
+		Transaction tx = getSession().beginTransaction();
+		Criteria crit = createEntityCriteria();
+		crit.add(Restrictions.eq("keywordId", keywordId));
+		crit.add(Restrictions.eq("relatedId", relatedId));
+		RelatedKeywordLink relatedKeywordLink = (RelatedKeywordLink) crit.uniqueResult();
+		tx.commit();
+		return relatedKeywordLink;
+	}
+	
 
 	public void saveAll(List<RelatedKeywordLink> relatedKeywordLinks) {
 		// TODO Auto-generated method stub

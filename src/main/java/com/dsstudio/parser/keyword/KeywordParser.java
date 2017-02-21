@@ -53,7 +53,7 @@ public class KeywordParser implements Runnable {
 			KeywordLinkQueue keywordLinkQueue = crawlableLinkQueue();
 			if (keywordLinkQueue != null) {
 				for (CommonKeywordParser _keywordParser : keywordParsers) {
-					if (keywordLinkQueue.getAgentIndex() == _keywordParser.getAgentId())
+					if (keywordLinkQueue.getAgentId() == _keywordParser.getAgentId())
 						keywordParser = _keywordParser;
 				}
 				if (keywordParser != null) {

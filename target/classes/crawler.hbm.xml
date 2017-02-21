@@ -99,13 +99,13 @@
 		</property>
 	</class>
 	
-	<class name="com.dsstudio.hibernate.model.KeywordLinkQueue" table="KeywordLinkQueue">
-		<id name="id" type="int">
+	<class name="com.dsstudio.hibernate.model.KeywordLinkQueue" table="KeywordLinkQueue"  dynamic-update="true">
+		<composite-id>
+			<key-property name="link" column="Link" type="java.lang.String"/>
+			<key-property name="agentId" column="AgentId" type="int"/>
+		</composite-id>
+		<property name="id" type="int">
 			<column name="Id"/>
-			<generator class="increment"/>
-		</id>
-		<property name="link" type="java.lang.String" unique="true">
-			<column name="Link"/>
 		</property>
 		<property name="batchId" type="java.lang.String">
 			<column name="BatchId"/>
@@ -122,12 +122,9 @@
 		<property name="bookingDate" type="timestamp">
 			<column name="BookingDate"/>
 		</property>
-		<property name="agentIndex" type="int">
-			<column name = "AgentIndex"/>
-		</property>
 	</class>
 	
-	<class name="com.dsstudio.hibernate.model.Keyword" table="Keyword">
+	<class name="com.dsstudio.hibernate.model.Keyword" table="Keyword" dynamic-update="true">
 		<id name="id" type="int">
 			<column name="Id"/>
 			<generator class="increment"/>
@@ -152,7 +149,7 @@
 		</property>
 	</class>
 	
-	<class name="com.dsstudio.hibernate.model.KeywordMain" table="KeywordMain">
+	<class name="com.dsstudio.hibernate.model.KeywordMain" table="KeywordMain" dynamic-update="true">
 		<id name="id" type="int">
 			<column name="Id"/>
 			<generator class="increment"/>

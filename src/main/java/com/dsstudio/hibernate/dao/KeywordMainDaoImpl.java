@@ -1,6 +1,7 @@
 package com.dsstudio.hibernate.dao;
 
 import org.hibernate.Criteria;
+import org.hibernate.LockMode;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 

@@ -1,8 +1,11 @@
 package com.dsstudio.hibernate.model;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
-public class KeywordLinkQueue {
+public class KeywordLinkQueue implements Serializable {
+	
+
 	private int id;
 	private String link;
 	private String batchId;
@@ -10,8 +13,9 @@ public class KeywordLinkQueue {
 	private Timestamp dateCreated;
 	private String booking;
 	private Timestamp bookingDate;
-	private int agentIndex;
+	private int agentId;
 	
+
 	public int getId() {
 		return id;
 	}
@@ -54,13 +58,12 @@ public class KeywordLinkQueue {
 	public void setBookingDate(Timestamp bookingDate) {
 		this.bookingDate = bookingDate;
 	}
-	public int getAgentIndex() {
-		return agentIndex;
+	public int getAgentId() {
+		return agentId;
 	}
-	public void setAgentIndex(int agentIndex) {
-		this.agentIndex = agentIndex;
+	public void setAgentId(int agentId) {
+		this.agentId = agentId;
 	}
-	
 	
 	
 }

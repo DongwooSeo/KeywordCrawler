@@ -10,4 +10,5 @@ public interface KeywordLinkQueueDao {
 	void save(KeywordLinkQueue entity);
 	void saveAll(List<KeywordLinkQueue> keywordLinkQueues);
 	void update(KeywordLinkQueue keywordLinkQueue);
+	
 }

@@ -54,6 +54,10 @@ public class AgentKeywordParser extends CommonKeywordParser {
 		return agentId;
 	}
 
+	/*
+	 * (LinkQueue에 작업을 추가합니다.)
+	 * @see com.dsstudio.parser.keyword.CommonKeywordParser#saveKeywordLinkQueue(java.lang.String, int)
+	 */
 	protected int saveKeywordLinkQueue(String link, int agentId) {
 		KeywordLinkQueue entity = keywordLinkQueueDao.findByLink(link);
 		if (entity == null) {
@@ -62,7 +66,7 @@ public class AgentKeywordParser extends CommonKeywordParser {
 			keywordLinkQueue.setLink(link);
 			keywordLinkQueue.setStatus(1);
 			keywordLinkQueue.setDateCreated(now);
-			keywordLinkQueue.setAgentIndex(agentId);
+			keywordLinkQueue.setAgentId(agentId);
 			keywordLinkQueueDao.save(keywordLinkQueue);
 			return 1;
 		}

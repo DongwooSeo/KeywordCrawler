@@ -16,7 +16,7 @@
 		<property name="hibernate.current_session_context_class">thread</property>
 		
 		<!-- Outputs the SQL queries, should be disabled in Production -->
-		<property name="hibernate.show_sql">false</property>
+		<property name="hibernate.show_sql">true</property>
 		
 		<!-- Dialect is required to let Hibernate know the Database Type, MySQL, Oracle etc
 			Hibernate 4 automatically figure out Dialect from Database Connection Metadata -->

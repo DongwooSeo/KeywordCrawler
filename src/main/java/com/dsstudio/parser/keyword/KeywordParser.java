@@ -32,16 +32,7 @@ public class KeywordParser implements Runnable {
 	 */
 	public static synchronized KeywordLinkQueue crawlableLinkQueue() {
 		KeywordLinkQueue keywordLinkQueue = keywordLinkQueueDao.fetchFirstRow();
-
-		if (keywordLinkQueue != null) {
-			// agent.getName();
-			keywordLinkQueue.setStatus(2);
-			keywordLinkQueue.setBooking(UUID.randomUUID() + "");
-			keywordLinkQueue.setBookingDate(new Timestamp(new Date().getTime()));
-			keywordLinkQueueDao.update(keywordLinkQueue);
-			return keywordLinkQueue;
-		}
-		return null;
+		return keywordLinkQueue;
 	}
 
 	public void run() {

@@ -122,7 +122,7 @@ public class AgentKeywordParser extends CommonKeywordParser {
 						RelatedKeywordLink relatedKeywordLink = new RelatedKeywordLink();
 						relatedKeywordLink.setKeywordId(keywordId);
 						relatedKeywordLink.setRelatedId(relatedKeywordId);
-						relatedKeywordLinkDao.save(relatedKeywordLink);
+						//relatedKeywordLinkDao.save(relatedKeywordLink);
 					}
 				}
 				/*
@@ -143,40 +143,12 @@ public class AgentKeywordParser extends CommonKeywordParser {
 	 * Keyword(Agent별 키워드), RelatedKeywordLink(연관 검색어 저장) 테이블에 각각 저장 및 업데이트 됩니다.
 	 */
 	private int upsertKeyword(String keywordName, String link) {
-		KeywordMain entityKeywordMain = keywordMainDao.findByName(keywordName);
-		int keywordMainId = 0;
+		//KeywordMain entityKeywordMain = keywordMainDao.findByName(keywordName);
 		int keywordId = 0;
-		if (entityKeywordMain == null) {
-			KeywordMain keywordMain = new KeywordMain();
-			keywordMain.setName(keywordName);
-			keywordMain.setDateCreated(new Timestamp(new Date().getTime()));
-			keywordMain.setDateUpdated(new Timestamp(new Date().getTime()));
-			if (!keywordMain.getName().isEmpty())
-				keywordMainId = keywordMainDao.save(keywordMain);
-		} else {
-			entityKeywordMain.setDateUpdated(new Timestamp(new Date().getTime()));
-			keywordMainDao.update(entityKeywordMain);
-			keywordMainId = entityKeywordMain.getId();
-		}
+		int keywordMainId = keywordMainDao.upsertKeywordMain(keywordName);
 
 		if (keywordMainId != 0) {
-			Keyword entityKeyword = keywordDao.findByKwdMainIdAndAgentId(keywordMainId, this.agentId);
-			if (entityKeyword == null) {
-				Keyword keyword = new Keyword();
-				keyword.setKeywordMainId(keywordMainId);
-				keyword.setAgentId(this.agentId);
-				keyword.setName(keywordName);
-				keyword.setLink(link);
-				keyword.setDateCreated(new Timestamp(new Date().getTime()));
-				keyword.setDateUpdated(new Timestamp(new Date().getTime()));
-				if (!keyword.getName().isEmpty())
-					keywordId = keywordDao.save(keyword);
-			} else {
-				entityKeyword.setDateUpdated(new Timestamp(new Date().getTime()));
-				keywordDao.update(entityKeyword);
-				keywordId = entityKeywordMain.getId();
-			}
-
+			keywordId = keywordDao.upsertKeyword(keywordName, link, keywordMainId, keywordId);
 		}
 		return keywordId;
 	}

@@ -1,10 +1,6 @@
 package com.dsstudio.parser.keyword;
 
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
-import java.util.UUID;
-
 import com.dsstudio.hibernate.dao.AgentDao;
 import com.dsstudio.hibernate.dao.AgentDaoImpl;
 import com.dsstudio.hibernate.dao.KeywordLinkQueueDao;

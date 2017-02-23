@@ -8,7 +8,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import com.dsstudio.hibernate.model.Agent;
 import com.dsstudio.hibernate.util.HibernateUtil;
 
 

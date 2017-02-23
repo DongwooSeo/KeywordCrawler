@@ -28,11 +28,8 @@ import com.dsstudio.hibernate.dao.RelatedKeywordLinkDao;
 import com.dsstudio.hibernate.dao.RelatedKeywordLinkDaoImpl;
 import com.dsstudio.hibernate.model.Agent;
 import com.dsstudio.hibernate.model.AgentConfig;
-import com.dsstudio.hibernate.model.Keyword;
 import com.dsstudio.hibernate.model.KeywordLinkQueue;
-import com.dsstudio.hibernate.model.KeywordMain;
 import com.dsstudio.hibernate.model.Parser;
-import com.dsstudio.hibernate.model.RelatedKeywordLink;
 
 public class AgentKeywordParser extends CommonKeywordParser {
 	protected int agentId;
@@ -94,12 +91,12 @@ public class AgentKeywordParser extends CommonKeywordParser {
 		AgentConfig agentConfig = agent.getAgentConfig();
 
 		List<Parser> parsers = parseDao.findByAgentId(agent.getId());
-
+		
 		int keywordId = 0;
 
 		try {
 			System.out.println(agent.getName() + " 키워드 파싱 시작!!");
-
+			//System.out.println(keywordLinkQueue.getLink());
 			Connection connection = Jsoup.connect(keywordLinkQueue.getLink()).userAgent(agentConfig.getUserAgent());
 			Document document = connection.get();
 
@@ -111,19 +108,15 @@ public class AgentKeywordParser extends CommonKeywordParser {
 			Elements elements = document.select(DataCommon.getValueBy("RKeywordList", parsers))
 					.select(DataCommon.getValueBy("RKeywordListElem", parsers));
 			for (Element elem : elements) {
+				
 				String link = agentConfig.getSearchQuery() + elem.attr("href");
 				String title = elem.text();
-
+				
+				//연관 검색어에 들어갈 관련 키 값을 할당 받습니다.
 				int relatedKeywordId = upsertKeyword(title, link);
+				
 				if (relatedKeywordId != 0) {
-					RelatedKeywordLink entityRelatedKeywordLink = relatedKeywordLinkDao
-							.findByKeywordAndRelatedId(keywordId, relatedKeywordId);
-					if (entityRelatedKeywordLink == null) {
-						RelatedKeywordLink relatedKeywordLink = new RelatedKeywordLink();
-						relatedKeywordLink.setKeywordId(keywordId);
-						relatedKeywordLink.setRelatedId(relatedKeywordId);
-						//relatedKeywordLinkDao.save(relatedKeywordLink);
-					}
+					relatedKeywordLinkDao.upsertRelatedKeywordLink(keywordId, relatedKeywordId);
 				}
 				/*
 				 * linkQueue에 작업을 추가합니다. 수집할 대상의 추가!

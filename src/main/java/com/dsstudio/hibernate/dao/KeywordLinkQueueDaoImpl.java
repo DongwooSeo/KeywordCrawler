@@ -13,7 +13,6 @@ import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
 import com.dsstudio.hibernate.model.KeywordLinkQueue;
-import com.dsstudio.hibernate.model.KeywordLinkQueuePK;
 
 public class KeywordLinkQueueDaoImpl extends AbstractDao<Integer, KeywordLinkQueue> implements KeywordLinkQueueDao {
 

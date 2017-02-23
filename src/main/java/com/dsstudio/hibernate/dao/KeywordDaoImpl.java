@@ -53,34 +53,32 @@ public class KeywordDaoImpl extends AbstractDao<Integer, Keyword> implements Key
 		Session session = getSession();
 		Transaction tx = session.beginTransaction();
 		
-		Criteria crit = createEntityCriteria();
+		Criteria crit = session.createCriteria(Keyword.class);
 		crit.add(Restrictions.eq("keywordMainId",keywordMainId));
 		crit.add(Restrictions.eq("agentId",agentId));
 		
-		Keyword entityKeyword = (Keyword)crit.uniqueResult();
+		Keyword entityKeyword = (Keyword)crit.setMaxResults(1).uniqueResult();
 		
 		if (entityKeyword == null) {
-			Keyword keyword = new Keyword();
-			keyword.setKeywordMainId(keywordMainId);
-			keyword.setAgentId(agentId);
-			keyword.setName(keywordName);
-			keyword.setLink(link);
-			keyword.setDateCreated(new Timestamp(new Date().getTime()));
-			keyword.setDateUpdated(new Timestamp(new Date().getTime()));
-			if (!keyword.getName().isEmpty()){
+			entityKeyword = new Keyword();
+			entityKeyword.setKeywordMainId(keywordMainId);
+			entityKeyword.setAgentId(agentId);
+			entityKeyword.setName(keywordName);
+			entityKeyword.setLink(link);
+			entityKeyword.setDateCreated(new Timestamp(new Date().getTime()));
+			entityKeyword.setDateUpdated(new Timestamp(new Date().getTime()));
+			if (!entityKeyword.getName().isEmpty()){
 				//System.out.println(keyword.getName());
-				//keywordId = (Integer) session.save(keyword);
+				keywordId = (Integer) session.save(entityKeyword);
 			}
 		} else {
 			entityKeyword.setDateUpdated(new Timestamp(new Date().getTime()));
 			session.update(entityKeyword);
 			keywordId = keywordMainId;
 		}
-		try{
-			tx.commit();
-		}catch(Exception e){
-			tx.rollback();
-		}
+		
+		tx.commit();
+		
 		
 		
 		return keywordId;

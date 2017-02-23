@@ -3,6 +3,7 @@ package com.dsstudio.hibernate.dao;
 import java.util.List;
 
 import org.hibernate.Criteria;
+import org.hibernate.LockMode;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
@@ -51,6 +52,27 @@ public class RelatedKeywordLinkDaoImpl extends AbstractDao<Integer, RelatedKeywo
 				session.clear();
 			}		
 		}
+		tx.commit();
+	}
+
+	public void upsertRelatedKeywordLink(int keywordId, int relatedId) {
+		// TODO Auto-generated method stub
+		Session session = getSession();
+		Transaction tx = session.beginTransaction();
+		
+		Criteria crit = session.createCriteria(RelatedKeywordLink.class);
+		crit.add(Restrictions.eq("keywordId", keywordId));
+		crit.add(Restrictions.eq("relatedId", relatedId));
+		
+		RelatedKeywordLink entityRelatedKeywordLink = (RelatedKeywordLink)crit.setMaxResults(1).uniqueResult();
+		
+		if(entityRelatedKeywordLink==null){
+			entityRelatedKeywordLink = new RelatedKeywordLink();
+			entityRelatedKeywordLink.setKeywordId(keywordId);
+			entityRelatedKeywordLink.setRelatedId(relatedId);
+			session.save(entityRelatedKeywordLink);
+		}
+		
 		tx.commit();
 	}
 

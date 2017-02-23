@@ -1,10 +1,8 @@
 package com.dsstudio.hibernate.model;
 
-import java.io.Serializable;
 import java.sql.Timestamp;
 
-public class KeywordLinkQueue implements Serializable {
-	
+public class KeywordLinkQueue{
 
 	private int id;
 	private String link;

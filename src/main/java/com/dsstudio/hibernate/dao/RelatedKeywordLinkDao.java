@@ -9,4 +9,5 @@ public interface RelatedKeywordLinkDao {
 	RelatedKeywordLink findByKeywordAndRelatedId(int keywordId, int relatedId);
 	void save(RelatedKeywordLink relatedKeywordLink);
 	void saveAll(List<RelatedKeywordLink> relatedKeywordLinks);
+	void upsertRelatedKeywordLink(int keywordId, int relatedId);
 }

@@ -31,34 +31,35 @@ public class KeywordLinkQueueDaoImpl extends AbstractDao<Integer, KeywordLinkQue
 		// TODO Auto-generated method stub
 		super.persist(entity);
 	}
-	
-	public void saveIfNotExist(String link, int agentId){
-		
+
+	public void saveIfNotExist(String link, int agentId) {
+
 		Session session = getSession();
-		Transaction tx = session.beginTransaction();
-		Criteria crit = session.createCriteria(KeywordLinkQueue.class);
-		crit.add(Restrictions.eq("link", link));
-		
-		KeywordLinkQueue entityKeywordLinkQueue = (KeywordLinkQueue) crit.setMaxResults(1).uniqueResult();
-		
-		if(entityKeywordLinkQueue==null){
-			KeywordLinkQueue keywordLinkQueue = new KeywordLinkQueue();
-			keywordLinkQueue.setLink(link);
-			keywordLinkQueue.setStatus(1);
-			keywordLinkQueue.setDateCreated(new Timestamp(new Date().getTime()));
-			keywordLinkQueue.setAgentId(agentId);
-			session.save(keywordLinkQueue);
-		}
-		
-		// TODO Auto-generated method stub
-		try{
+		Transaction tx = null;
+		try {
+			tx = session.beginTransaction();
+			Criteria crit = session.createCriteria(KeywordLinkQueue.class);
+			crit.add(Restrictions.eq("link", link));
+
+			KeywordLinkQueue entityKeywordLinkQueue = (KeywordLinkQueue) crit.setMaxResults(1).uniqueResult();
+
+			if (entityKeywordLinkQueue == null) {
+				KeywordLinkQueue keywordLinkQueue = new KeywordLinkQueue();
+				keywordLinkQueue.setLink(link);
+				keywordLinkQueue.setStatus(1);
+				keywordLinkQueue.setDateCreated(new Timestamp(new Date().getTime()));
+				keywordLinkQueue.setAgentId(agentId);
+				session.save(keywordLinkQueue);
+			}
+			// TODO Auto-generated method stub
 			tx.commit();
-		}catch(Exception e){
+		} catch (Exception e) {
 			tx.rollback();
+			System.out.println("rollback!!");
 		}
-		
-		
+
 	}
+
 	public void saveAll(List<KeywordLinkQueue> keywordLinkQueues) {
 		// TODO Auto-generated method stub
 		Session session = getSession();
@@ -83,42 +84,49 @@ public class KeywordLinkQueueDaoImpl extends AbstractDao<Integer, KeywordLinkQue
 	}
 
 	/*
-	 * ( PESSIMISTIC_WRITE, Lock Mode를 사용하여 select for update시 테이블에 락을 생성합니다. // concurrency blocking)
+	 * ( PESSIMISTIC_WRITE, Lock Mode를 사용하여 select for update시 테이블에 락을 생성합니다. //
+	 * concurrency blocking)
+	 * 
 	 * @see com.dsstudio.hibernate.dao.KeywordLinkQueueDao#fetchFirstRow()
 	 */
 	public KeywordLinkQueue fetchFirstRow() {
 		// TODO Auto-generated method stub
 		Session session = getSession();
-		Transaction tx = session.beginTransaction();
-		/*
-		Query query = getSession()
-				.createSQLQuery(
-						"select * from KeywordLinkQueue a where Status = 1 or (BookingDate + INTERVAL 10 MINUTE < now() and status = 2) order by Id limit 1")
-				.addEntity(KeywordLinkQueue.class);
-		*/
-		Query query = session.createQuery("from KeywordLinkQueue a where Status = 1 or (BookingDate < :time and status = 2) order by Id");
-		query.setParameter("time", new Timestamp(new Date().getTime() - 10*60*1000));
-		query.setLockMode("a",LockMode.PESSIMISTIC_WRITE);
-		query.setMaxResults(1);
+		Transaction tx = null;
 		
-		List<KeywordLinkQueue> result = query.list();
 		KeywordLinkQueue keywordLinkQueue = null;
+		try {
+			tx = session.beginTransaction();
+			/*
+			 * Query query = getSession() .createSQLQuery(
+			 * "select * from KeywordLinkQueue a where Status = 1 or (BookingDate + INTERVAL 10 MINUTE < now() and status = 2) order by Id limit 1"
+			 * ) .addEntity(KeywordLinkQueue.class);
+			 */
+			Query query = session.createQuery(
+					"from KeywordLinkQueue a where Status = 1 or (BookingDate < :time and status = 2) order by Id");
+			query.setParameter("time", new Timestamp(new Date().getTime() - 10 * 60 * 1000));
+			query.setLockMode("a", LockMode.PESSIMISTIC_WRITE);
+			query.setMaxResults(1);
 
-		if (!result.isEmpty()) {
-			keywordLinkQueue = result.get(0);
-		}
-		if(keywordLinkQueue!=null){
-			keywordLinkQueue.setStatus(2);
-			keywordLinkQueue.setBooking(UUID.randomUUID() + "");
-			keywordLinkQueue.setBookingDate(new Timestamp(new Date().getTime()));
-			session.update(keywordLinkQueue);
-		}
-		try{
+			List<KeywordLinkQueue> result = query.list();
+			
+
+			if (!result.isEmpty()) {
+				keywordLinkQueue = result.get(0);
+			}
+			if (keywordLinkQueue != null) {
+				keywordLinkQueue.setStatus(2);
+				keywordLinkQueue.setBooking(UUID.randomUUID() + "");
+				keywordLinkQueue.setBookingDate(new Timestamp(new Date().getTime()));
+				session.update(keywordLinkQueue);
+			}
+
 			tx.commit();
-		}catch(Exception e){
+		} catch (Exception e) {
 			tx.rollback();
+			System.out.println("rollback");
 		}
-		
+
 		return keywordLinkQueue;
 	}
 

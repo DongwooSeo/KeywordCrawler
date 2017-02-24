@@ -11,7 +11,7 @@ import org.hibernate.criterion.Restrictions;
 
 import com.dsstudio.hibernate.model.KeywordMain;
 
-public class KeywordMainDaoImpl extends AbstractDao<Integer, KeywordMain> implements KeywordMainDao{
+public class KeywordMainDaoImpl extends AbstractDao<Integer, KeywordMain> implements KeywordMainDao {
 
 	public KeywordMain findByName(String name) {
 		// TODO Auto-generated method stub
@@ -30,42 +30,43 @@ public class KeywordMainDaoImpl extends AbstractDao<Integer, KeywordMain> implem
 		tx.commit();
 		return id;
 	}
-	
-	public void update(KeywordMain keywordMain){
+
+	public void update(KeywordMain keywordMain) {
 		super.update(keywordMain);
 	}
 
-	public int upsertKeywordMain(String keywordName){
+	public int upsertKeywordMain(String keywordName) {
 		// TODO Auto-generated method stub
 		int keywordMainId = 0;
-		
+
 		Session session = getSession();
-		Transaction tx = session.beginTransaction();
-		
-		Criteria crit = session.createCriteria(KeywordMain.class);
-		crit.add(Restrictions.eq("name", keywordName));
-		KeywordMain entityKeywordMain = (KeywordMain)crit.setMaxResults(1).uniqueResult();
-		
-		if(entityKeywordMain==null){
-			entityKeywordMain = new KeywordMain();
-			entityKeywordMain.setName(keywordName);
-			entityKeywordMain.setDateCreated(new Timestamp(new Date().getTime()));
-			entityKeywordMain.setDateUpdated(new Timestamp(new Date().getTime()));
-			if (!entityKeywordMain.getName().isEmpty()){
-				//System.out.println(keywordMain.getName());
-				keywordMainId = (Integer) session.save(entityKeywordMain);
+		Transaction tx = null;
+		try {
+			tx = session.beginTransaction();
+			Criteria crit = session.createCriteria(KeywordMain.class);
+			crit.add(Restrictions.eq("name", keywordName));
+			KeywordMain entityKeywordMain = (KeywordMain) crit.setMaxResults(1).uniqueResult();
+
+			if (entityKeywordMain == null) {
+				entityKeywordMain = new KeywordMain();
+				entityKeywordMain.setName(keywordName);
+				entityKeywordMain.setDateCreated(new Timestamp(new Date().getTime()));
+				entityKeywordMain.setDateUpdated(new Timestamp(new Date().getTime()));
+				if (!entityKeywordMain.getName().isEmpty()) {
+					// System.out.println(keywordMain.getName());
+					keywordMainId = (Integer) session.save(entityKeywordMain);
+				}
+			} else {
+				entityKeywordMain.setDateUpdated(new Timestamp(new Date().getTime()));
+				keywordMainId = entityKeywordMain.getId();
+				session.update(entityKeywordMain);
 			}
-		}else{
-			entityKeywordMain.setDateUpdated(new Timestamp(new Date().getTime()));
-			keywordMainId = entityKeywordMain.getId();
-			session.update(entityKeywordMain);
-		}
-		try{
 			tx.commit();
-		}catch(Exception e){
+		} catch (Exception e) {
 			tx.rollback();
+			System.out.println("rollback!!");
 		}
-		
+
 		return keywordMainId;
 	}
 }

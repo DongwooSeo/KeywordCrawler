@@ -13,7 +13,7 @@ public class AppMain {
 		CrawlController controller = new CrawlController(config);
 		
 		//Starting RealtimeKeywordCrawler by passing a class with two threads.
-		controller.startNonBlocking(RealtimeKeywordCrawler.class, 2);
-		controller.startNonBlocking(BasicKeywordCrawler.class, 2);
+		controller.startNonBlocking(RealtimeKeywordCrawler.class, 0);
+		controller.startNonBlocking(BasicKeywordCrawler.class, 4);
 	}
 }

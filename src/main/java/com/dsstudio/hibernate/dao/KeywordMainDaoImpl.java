@@ -44,7 +44,6 @@ public class KeywordMainDaoImpl extends AbstractDao<Integer, KeywordMain> implem
 		
 		Criteria crit = session.createCriteria(KeywordMain.class);
 		crit.add(Restrictions.eq("name", keywordName));
-
 		KeywordMain entityKeywordMain = (KeywordMain)crit.setMaxResults(1).uniqueResult();
 		
 		if(entityKeywordMain==null){
@@ -61,9 +60,11 @@ public class KeywordMainDaoImpl extends AbstractDao<Integer, KeywordMain> implem
 			keywordMainId = entityKeywordMain.getId();
 			session.update(entityKeywordMain);
 		}
-		
-		tx.commit();
-		
+		try{
+			tx.commit();
+		}catch(Exception e){
+			tx.rollback();
+		}
 		
 		return keywordMainId;
 	}

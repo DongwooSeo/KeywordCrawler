@@ -73,7 +73,12 @@ public class RelatedKeywordLinkDaoImpl extends AbstractDao<Integer, RelatedKeywo
 			session.save(entityRelatedKeywordLink);
 		}
 		
-		tx.commit();
+		try{
+			tx.commit();
+		}catch(Exception e){
+			tx.rollback();
+		}
+		
 	}
 
 }

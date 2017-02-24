@@ -56,6 +56,7 @@ public class KeywordDaoImpl extends AbstractDao<Integer, Keyword> implements Key
 		Criteria crit = session.createCriteria(Keyword.class);
 		crit.add(Restrictions.eq("keywordMainId",keywordMainId));
 		crit.add(Restrictions.eq("agentId",agentId));
+	
 		
 		Keyword entityKeyword = (Keyword)crit.setMaxResults(1).uniqueResult();
 		
@@ -77,9 +78,11 @@ public class KeywordDaoImpl extends AbstractDao<Integer, Keyword> implements Key
 			keywordId = keywordMainId;
 		}
 		
-		tx.commit();
-		
-		
+		try{
+			tx.commit();
+		}catch(Exception e){
+			tx.rollback();
+		}
 		
 		return keywordId;
 	}

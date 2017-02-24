@@ -53,21 +53,13 @@ public class AgentKeywordParser extends CommonKeywordParser {
 
 	/*
 	 * (LinkQueue에 작업을 추가합니다.)
-	 * @see com.dsstudio.parser.keyword.CommonKeywordParser#saveKeywordLinkQueue(java.lang.String, int)
+	 * 
+	 * @see
+	 * com.dsstudio.parser.keyword.CommonKeywordParser#saveKeywordLinkQueue(java
+	 * .lang.String, int)
 	 */
 	protected int saveKeywordLinkQueue(String link, int agentId) {
-		KeywordLinkQueue entity = keywordLinkQueueDao.findByLink(link);
-		if (entity == null) {
-			Timestamp now = new Timestamp(new Date().getTime());
-			KeywordLinkQueue keywordLinkQueue = new KeywordLinkQueue();
-			keywordLinkQueue.setLink(link);
-			keywordLinkQueue.setStatus(1);
-			keywordLinkQueue.setDateCreated(now);
-			keywordLinkQueue.setAgentId(agentId);
-			keywordLinkQueueDao.save(keywordLinkQueue);
-			return 1;
-		}
-
+		keywordLinkQueueDao.saveIfNotExist(link, agentId);
 		return 0;
 	}
 
@@ -91,30 +83,26 @@ public class AgentKeywordParser extends CommonKeywordParser {
 		AgentConfig agentConfig = agent.getAgentConfig();
 
 		List<Parser> parsers = parseDao.findByAgentId(agent.getId());
-		
 		int keywordId = 0;
 
 		try {
 			System.out.println(agent.getName() + " 키워드 파싱 시작!!");
-			//System.out.println(keywordLinkQueue.getLink());
-			Connection connection = Jsoup.connect(keywordLinkQueue.getLink()).userAgent(agentConfig.getUserAgent());
+			// System.out.println(keywordLinkQueue.getLink());
+			Connection connection = Jsoup.connect(keywordLinkQueue.getLink()).timeout(agentConfig.getTimeout()*1000).userAgent(agentConfig.getUserAgent());
 			Document document = connection.get();
 
 			String keywordName = document.select(DataCommon.getValueBy("KeywordField", parsers))
 					.attr(DataCommon.getValueBy("KeywordFieldAttr", parsers));
 
-			keywordId = upsertKeyword(keywordName, keywordLinkQueue.getLink());
+			keywordId = upsertKeyword(keywordName, keywordLinkQueue.getLink(), this.agentId);
 
 			Elements elements = document.select(DataCommon.getValueBy("RKeywordList", parsers))
 					.select(DataCommon.getValueBy("RKeywordListElem", parsers));
 			for (Element elem : elements) {
-				
 				String link = agentConfig.getSearchQuery() + elem.attr("href");
 				String title = elem.text();
-				
-				//연관 검색어에 들어갈 관련 키 값을 할당 받습니다.
-				int relatedKeywordId = upsertKeyword(title, link);
-				
+				// 연관 검색어에 들어갈 관련 키 값을 할당 받습니다.
+				int relatedKeywordId = upsertKeyword(title, link, this.agentId);
 				if (relatedKeywordId != 0) {
 					relatedKeywordLinkDao.upsertRelatedKeywordLink(keywordId, relatedKeywordId);
 				}
@@ -123,7 +111,6 @@ public class AgentKeywordParser extends CommonKeywordParser {
 				 */
 				saveKeywordLinkQueue(link, this.agentId);
 			}
-
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -135,13 +122,14 @@ public class AgentKeywordParser extends CommonKeywordParser {
 	 * 검색어가 현재 디비에 있는 경우 업데이트하며 없을 경우 키워드를 저장합니다. KeywordMain(indexing table),
 	 * Keyword(Agent별 키워드), RelatedKeywordLink(연관 검색어 저장) 테이블에 각각 저장 및 업데이트 됩니다.
 	 */
-	private int upsertKeyword(String keywordName, String link) {
-		//KeywordMain entityKeywordMain = keywordMainDao.findByName(keywordName);
+	private int upsertKeyword(String keywordName, String link, int agenId) {
+		// KeywordMain entityKeywordMain =
+		// keywordMainDao.findByName(keywordName);
 		int keywordId = 0;
 		int keywordMainId = keywordMainDao.upsertKeywordMain(keywordName);
 
 		if (keywordMainId != 0) {
-			keywordId = keywordDao.upsertKeyword(keywordName, link, keywordMainId, keywordId);
+			keywordId = keywordDao.upsertKeyword(keywordName, link, keywordMainId, agentId);
 		}
 		return keywordId;
 	}

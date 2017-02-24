@@ -43,7 +43,7 @@ public class DaumKeywordParser extends AgentKeywordParser {
 		System.out.println(Thread.currentThread().getName() + " | " + super.agentName + " " + "실시간 키워드 파싱중....");
 
 		try {
-			Connection connection = Jsoup.connect(agentConfig.getUrl()).userAgent(agentConfig.getUserAgent());
+			Connection connection = Jsoup.connect(agentConfig.getUrl()).timeout(agentConfig.getTimeout()*1000).userAgent(agentConfig.getUserAgent());
 			Document document = connection.get();
 			Elements rtKeywordList = document.select(DataCommon.getValueBy("RtKeywordList", parsers));
 

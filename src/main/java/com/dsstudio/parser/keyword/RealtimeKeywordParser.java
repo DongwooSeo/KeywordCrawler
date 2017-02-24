@@ -26,9 +26,7 @@ public class RealtimeKeywordParser implements Runnable {
 	 */
 	public static synchronized Agent crawlableAgent() {
 		Agent agent = agentDao.fetchFirstRow();
-
 		if (agent != null) {
-
 			// agent.getName();
 			System.out.println(agent.getName());
 			agent.setStatus(2);

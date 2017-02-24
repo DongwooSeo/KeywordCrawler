@@ -6,6 +6,7 @@ public class AgentConfig {
 	private String url;
 	private String searchQuery;
 	private String userAgent;
+	private int timeout;
 	private Agent agent;
 	
 	public int getId() {
@@ -43,6 +44,12 @@ public class AgentConfig {
 	}
 	public void setAgent(Agent agent) {
 		this.agent = agent;
+	}
+	public int getTimeout() {
+		return timeout;
+	}
+	public void setTimeout(int timeout) {
+		this.timeout = timeout;
 	}
 	
 	

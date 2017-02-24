@@ -20,7 +20,7 @@ public class KeywordLinkQueueDaoImpl extends AbstractDao<Integer, KeywordLinkQue
 		Transaction tx = getSession().beginTransaction();
 		Criteria crit = createEntityCriteria();
 		crit.add(Restrictions.eq("link", link));
-		KeywordLinkQueue keywordLinkQueue = (KeywordLinkQueue) crit.uniqueResult();
+		KeywordLinkQueue keywordLinkQueue = (KeywordLinkQueue) crit.setMaxResults(1).uniqueResult();
 		// TODO Auto-generated method stub
 		tx.commit();
 
@@ -31,7 +31,34 @@ public class KeywordLinkQueueDaoImpl extends AbstractDao<Integer, KeywordLinkQue
 		// TODO Auto-generated method stub
 		super.persist(entity);
 	}
-
+	
+	public void saveIfNotExist(String link, int agentId){
+		
+		Session session = getSession();
+		Transaction tx = session.beginTransaction();
+		Criteria crit = session.createCriteria(KeywordLinkQueue.class);
+		crit.add(Restrictions.eq("link", link));
+		
+		KeywordLinkQueue entityKeywordLinkQueue = (KeywordLinkQueue) crit.setMaxResults(1).uniqueResult();
+		
+		if(entityKeywordLinkQueue==null){
+			KeywordLinkQueue keywordLinkQueue = new KeywordLinkQueue();
+			keywordLinkQueue.setLink(link);
+			keywordLinkQueue.setStatus(1);
+			keywordLinkQueue.setDateCreated(new Timestamp(new Date().getTime()));
+			keywordLinkQueue.setAgentId(agentId);
+			session.save(keywordLinkQueue);
+		}
+		
+		// TODO Auto-generated method stub
+		try{
+			tx.commit();
+		}catch(Exception e){
+			tx.rollback();
+		}
+		
+		
+	}
 	public void saveAll(List<KeywordLinkQueue> keywordLinkQueues) {
 		// TODO Auto-generated method stub
 		Session session = getSession();
@@ -86,7 +113,12 @@ public class KeywordLinkQueueDaoImpl extends AbstractDao<Integer, KeywordLinkQue
 			keywordLinkQueue.setBookingDate(new Timestamp(new Date().getTime()));
 			session.update(keywordLinkQueue);
 		}
-		tx.commit();
+		try{
+			tx.commit();
+		}catch(Exception e){
+			tx.rollback();
+		}
+		
 		return keywordLinkQueue;
 	}
 

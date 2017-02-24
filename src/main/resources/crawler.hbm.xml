@@ -52,6 +52,9 @@
 		<property name="userAgent" type="java.lang.String">
 			<column name="UserAgent"/>
 		</property>
+		<property name="timeout" type="int">
+			<column name = "Timeout"/>
+		</property>
 
 	</class>
 	
@@ -77,7 +80,7 @@
 			<generator class="increment"/>
 		</id>
 		<property name="agentId" type="int">
-			<column name = "AgentId"/>
+			<column name = "AgentId" />
 		</property>
 		<property name="name" type="java.lang.String">
 			<column name="Name"/>
@@ -157,8 +160,8 @@
 			<column name="Id"/>
 			<generator class="identity"/>
 		</id>
-		<property name="name" type="java.lang.String" unique="true">
-			<column name="Name"/>
+		<property name="name" type="java.lang.String" unique="true" >
+			<column name="Name" />
 		</property>
 		<property name="dateCreated" type="timestamp">
 			<column name="DateCreated"/>

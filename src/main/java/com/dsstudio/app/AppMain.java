@@ -14,6 +14,6 @@ public class AppMain {
 		
 		//Starting RealtimeKeywordCrawler by passing a class with two threads.
 		controller.startNonBlocking(RealtimeKeywordCrawler.class, 0);
-		controller.startNonBlocking(BasicKeywordCrawler.class, 4);
+		controller.startNonBlocking(BasicKeywordCrawler.class, 6);
 	}
 }

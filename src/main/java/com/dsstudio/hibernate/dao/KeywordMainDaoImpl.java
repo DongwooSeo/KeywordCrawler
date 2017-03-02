@@ -64,7 +64,7 @@ public class KeywordMainDaoImpl extends AbstractDao<Integer, KeywordMain> implem
 			tx.commit();
 		} catch (Exception e) {
 			tx.rollback();
-			System.out.println("rollback!!");
+			System.out.println("Duplicate keywordMainId at = " + keywordMainId + " / rollback()");
 		}
 
 		return keywordMainId;

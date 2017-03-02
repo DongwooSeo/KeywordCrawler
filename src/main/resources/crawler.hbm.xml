@@ -183,4 +183,5 @@
 			<column name = "RelatedId"/>
 		</property>
 	</class>
+
 </hibernate-mapping>

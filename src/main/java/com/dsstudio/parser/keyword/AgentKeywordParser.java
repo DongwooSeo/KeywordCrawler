@@ -88,28 +88,28 @@ public class AgentKeywordParser extends CommonKeywordParser {
 		try {
 			System.out.println(agent.getName() + " 키워드 파싱 시작!!");
 			// System.out.println(keywordLinkQueue.getLink());
-			Connection connection = Jsoup.connect(keywordLinkQueue.getLink()).timeout(agentConfig.getTimeout()*1000).userAgent(agentConfig.getUserAgent());
+			Connection connection = Jsoup.connect(keywordLinkQueue.getLink()).timeout(agentConfig.getTimeout() * 1000)
+					.userAgent(agentConfig.getUserAgent());
 			Document document = connection.get();
 
 			String keywordName = document.select(DataCommon.getValueBy("KeywordField", parsers))
 					.attr(DataCommon.getValueBy("KeywordFieldAttr", parsers));
 
-			keywordId = upsertKeyword(keywordName, keywordLinkQueue.getLink(), this.agentId);
+			keywordId = generateKeyword(keywordName, keywordLinkQueue.getLink(), this.agentId);
 
 			Elements elements = document.select(DataCommon.getValueBy("RKeywordList", parsers))
 					.select(DataCommon.getValueBy("RKeywordListElem", parsers));
+			//System.out.println("main keyword = " + keywordName);
 			for (Element elem : elements) {
 				String link = agentConfig.getSearchQuery() + elem.attr("href");
 				String title = elem.text();
-				// 연관 검색어에 들어갈 관련 키 값을 할당 받습니다.
-				int relatedKeywordId = upsertKeyword(title, link, this.agentId);
-				if (relatedKeywordId != 0) {
+				
+				int relatedKeywordId = generateKeyword(title, link, this.agentId);
+				
+				if(relatedKeywordId != 0 ){
 					relatedKeywordLinkDao.upsertRelatedKeywordLink(keywordId, relatedKeywordId);
 				}
-				/*
-				 * linkQueue에 작업을 추가합니다. 수집할 대상의 추가!
-				 */
-				saveKeywordLinkQueue(link, this.agentId);
+				 saveKeywordLinkQueue(link, agentId);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -122,15 +122,16 @@ public class AgentKeywordParser extends CommonKeywordParser {
 	 * 검색어가 현재 디비에 있는 경우 업데이트하며 없을 경우 키워드를 저장합니다. KeywordMain(indexing table),
 	 * Keyword(Agent별 키워드), RelatedKeywordLink(연관 검색어 저장) 테이블에 각각 저장 및 업데이트 됩니다.
 	 */
-	private int upsertKeyword(String keywordName, String link, int agenId) {
-		// KeywordMain entityKeywordMain =
-		// keywordMainDao.findByName(keywordName);
+	private int generateKeyword(String keywordName, String link, int agentId) {
+		// TODO Auto-generated method stub
 		int keywordId = 0;
 		int keywordMainId = keywordMainDao.upsertKeywordMain(keywordName);
-
+		
 		if (keywordMainId != 0) {
 			keywordId = keywordDao.upsertKeyword(keywordName, link, keywordMainId, agentId);
+			System.out.println(keywordMainId + " : " + keywordId + " : " + keywordName);
 		}
 		return keywordId;
 	}
 }
+

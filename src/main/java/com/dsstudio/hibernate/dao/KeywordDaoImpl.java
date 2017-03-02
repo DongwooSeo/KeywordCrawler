@@ -77,12 +77,13 @@ public class KeywordDaoImpl extends AbstractDao<Integer, Keyword> implements Key
 			} else {
 				entityKeyword.setDateUpdated(new Timestamp(new Date().getTime()));
 				session.update(entityKeyword);
-				keywordId = keywordMainId;
+				keywordId = entityKeyword.getId();
 			}
 
 			tx.commit();
 		} catch (Exception e) {
 			tx.rollback();
+			System.out.println("Duplicate keywordId at = " + keywordId + " / rollback()");
 		}
 
 		return keywordId;

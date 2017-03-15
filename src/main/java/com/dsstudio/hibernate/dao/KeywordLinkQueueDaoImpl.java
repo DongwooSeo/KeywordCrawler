@@ -116,7 +116,6 @@ public class KeywordLinkQueueDaoImpl extends AbstractDao<Integer, KeywordLinkQue
 			}
 			if (keywordLinkQueue != null) {
 				keywordLinkQueue.setStatus(2);
-				keywordLinkQueue.setBooking(UUID.randomUUID() + "");
 				keywordLinkQueue.setBookingDate(new Timestamp(new Date().getTime()));
 				session.update(keywordLinkQueue);
 			}

@@ -100,6 +100,7 @@ public class AgentKeywordParser extends CommonKeywordParser {
 			Elements elements = document.select(DataCommon.getValueBy("RKeywordList", parsers))
 					.select(DataCommon.getValueBy("RKeywordListElem", parsers));
 			//System.out.println("main keyword = " + keywordName);
+			int correl = 1;
 			for (Element elem : elements) {
 				String link = agentConfig.getSearchQuery() + elem.attr("href");
 				String title = elem.text();
@@ -107,7 +108,7 @@ public class AgentKeywordParser extends CommonKeywordParser {
 				int relatedKeywordId = generateKeyword(title, link, this.agentId);
 				
 				if(relatedKeywordId != 0 ){
-					relatedKeywordLinkDao.upsertRelatedKeywordLink(keywordId, relatedKeywordId);
+					relatedKeywordLinkDao.upsertRelatedKeywordLink(keywordId, relatedKeywordId, correl++);
 				}
 				 saveKeywordLinkQueue(link, agentId);
 			}

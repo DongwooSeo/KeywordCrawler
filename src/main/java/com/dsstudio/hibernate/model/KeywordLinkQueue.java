@@ -6,10 +6,8 @@ public class KeywordLinkQueue{
 
 	private int id;
 	private String link;
-	private String batchId;
 	private int status;
 	private Timestamp dateCreated;
-	private String booking;
 	private Timestamp bookingDate;
 	private int agentId;
 	
@@ -26,12 +24,6 @@ public class KeywordLinkQueue{
 	public void setLink(String link) {
 		this.link = link;
 	}
-	public String getBatchId() {
-		return batchId;
-	}
-	public void setBatchId(String batchId) {
-		this.batchId = batchId;
-	}
 	public int getStatus() {
 		return status;
 	}
@@ -43,12 +35,6 @@ public class KeywordLinkQueue{
 	}
 	public void setDateCreated(Timestamp dateCreated) {
 		this.dateCreated = dateCreated;
-	}
-	public String getBooking() {
-		return booking;
-	}
-	public void setBooking(String booking) {
-		this.booking = booking;
 	}
 	public Timestamp getBookingDate() {
 		return bookingDate;

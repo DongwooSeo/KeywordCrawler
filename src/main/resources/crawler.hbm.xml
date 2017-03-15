@@ -110,17 +110,11 @@
 		<property name="link" type="java.lang.String">
 			<column name="Link"/>
 		</property>
-		<property name="batchId" type="java.lang.String">
-			<column name="BatchId"/>
-		</property>
 		<property name="status" type="int">
 			<column name = "Status"/>
 		</property>
 		<property name="dateCreated" type="timestamp">
 			<column name="DateCreated"/>
-		</property>
-		<property name="booking" type="java.lang.String">
-			<column name="Booking"/>
 		</property>
 		<property name="bookingDate" type="timestamp">
 			<column name="BookingDate"/>
@@ -181,6 +175,9 @@
 		</property>
 		<property name="relatedId" type="int">
 			<column name = "RelatedId"/>
+		</property>
+		<property name="correl" type="int">
+			<column name = "Correl"/>
 		</property>
 	</class>
 

@@ -4,6 +4,7 @@ public class RelatedKeywordLink {
 	private int id;
 	private int keywordId;
 	private int relatedId;
+	private int correl;
 	
 	public int getId() {
 		return id;
@@ -23,6 +24,10 @@ public class RelatedKeywordLink {
 	public void setRelatedId(int relatedId) {
 		this.relatedId = relatedId;
 	}
-	
-	
+	public int getCorrel() {
+		return correl;
+	}
+	public void setCorrel(int correl) {
+		this.correl = correl;
+	}
 }

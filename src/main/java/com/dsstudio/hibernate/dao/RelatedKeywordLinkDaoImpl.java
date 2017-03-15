@@ -55,7 +55,7 @@ public class RelatedKeywordLinkDaoImpl extends AbstractDao<Integer, RelatedKeywo
 		tx.commit();
 	}
 
-	public void upsertRelatedKeywordLink(int keywordId, int relatedId) {
+	public void upsertRelatedKeywordLink(int keywordId, int relatedId, int correl) {
 		// TODO Auto-generated method stub
 		Session session = getSession();
 		Transaction tx = null;
@@ -72,7 +72,11 @@ public class RelatedKeywordLinkDaoImpl extends AbstractDao<Integer, RelatedKeywo
 				entityRelatedKeywordLink = new RelatedKeywordLink();
 				entityRelatedKeywordLink.setKeywordId(keywordId);
 				entityRelatedKeywordLink.setRelatedId(relatedId);
+				entityRelatedKeywordLink.setCorrel(correl);
 				session.save(entityRelatedKeywordLink);
+			}else{
+				entityRelatedKeywordLink.setCorrel(correl);
+				session.update(entityRelatedKeywordLink);
 			}
 			tx.commit();
 		} catch (Exception e) {

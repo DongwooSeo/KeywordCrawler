@@ -149,6 +149,34 @@
 		</property>
 	</class>
 	
+	<class name="com.dsstudio.hibernate.model.StockKeyword" table="StockKeyword" dynamic-update="true">
+		<id name="id" type="int">
+			<column name="Id"/>
+			<generator class="identity"/>
+		</id>
+		<property name="keywordMainId" type="int">
+			<column name = "KeywordMainId"/>
+		</property>
+		<property name="agentId" type="int">
+			<column name = "AgentId"/>
+		</property>
+		<property name="name" type="java.lang.String">
+			<column name="Name"/>
+		</property>
+		<property name="link" type="java.lang.String">
+			<column name="Link"/>
+		</property>
+		<property name="dateCreated" type="timestamp">
+			<column name="DateCreated"/>
+		</property>
+		<property name="dateUpdated" type="timestamp">
+			<column name="DateUpdated"/>
+		</property>
+		<property name="typeId" type="int">
+			<column name = "TypeId"/>
+		</property>
+	</class>
+	
 	<class name="com.dsstudio.hibernate.model.KeywordMain" table="KeywordMain" dynamic-update="true">
 		<id name="id" type="int">
 			<column name="Id"/>

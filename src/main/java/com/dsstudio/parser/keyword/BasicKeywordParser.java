@@ -26,4 +26,10 @@ public class BasicKeywordParser extends CommonKeywordParser {
 		//System.out.println("link = " + link);
 	}
 
+	@Override
+	protected void parseStockKeyword(KeywordLinkQueue keywordLinkQueue) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

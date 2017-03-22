@@ -2,6 +2,7 @@ package com.dsstudio.parser.keyword;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -26,6 +27,8 @@ import com.dsstudio.hibernate.dao.RealtimeKeywordDao;
 import com.dsstudio.hibernate.dao.RealtimeKeywordDaoImpl;
 import com.dsstudio.hibernate.dao.RelatedKeywordLinkDao;
 import com.dsstudio.hibernate.dao.RelatedKeywordLinkDaoImpl;
+import com.dsstudio.hibernate.dao.StockKeywordDao;
+import com.dsstudio.hibernate.dao.StockKeywordDaoImpl;
 import com.dsstudio.hibernate.model.Agent;
 import com.dsstudio.hibernate.model.AgentConfig;
 import com.dsstudio.hibernate.model.KeywordLinkQueue;
@@ -38,6 +41,7 @@ public class AgentKeywordParser extends CommonKeywordParser {
 	protected AgentDao agentDao = new AgentDaoImpl();
 	protected ParserDao parseDao = new ParserDaoImpl();
 	protected KeywordDao keywordDao = new KeywordDaoImpl();
+	protected StockKeywordDao stockKeywordDao = new StockKeywordDaoImpl();
 	protected KeywordMainDao keywordMainDao = new KeywordMainDaoImpl();
 	protected KeywordLinkQueueDao keywordLinkQueueDao = new KeywordLinkQueueDaoImpl();
 	protected RelatedKeywordLinkDao relatedKeywordLinkDao = new RelatedKeywordLinkDaoImpl();
@@ -79,11 +83,18 @@ public class AgentKeywordParser extends CommonKeywordParser {
 	@Override
 	protected void parseKeyword(KeywordLinkQueue keywordLinkQueue) {
 		// TODO Auto-generated method stub
+		parseStockKeyword(keywordLinkQueue);
+		
+	}
+
+	@Override
+	protected void parseStockKeyword(KeywordLinkQueue keywordLinkQueue) {
+		// TODO Auto-generated method stub
 		Agent agent = agentDao.findById(this.agentId);
 		AgentConfig agentConfig = agent.getAgentConfig();
 
 		List<Parser> parsers = parseDao.findByAgentId(agent.getId());
-		int keywordId = 0;
+		int stockKeywordId = 0;
 
 		try {
 			System.out.println(agent.getName() + " 키워드 파싱 시작!!");
@@ -93,30 +104,72 @@ public class AgentKeywordParser extends CommonKeywordParser {
 			Document document = connection.get();
 
 			String keywordName = document.select(DataCommon.getValueBy("KeywordField", parsers))
-					.attr(DataCommon.getValueBy("KeywordFieldAttr", parsers));
+					.attr(DataCommon.getValueBy("KeywordFieldAttr", parsers)).trim().replaceAll("주가", "").replaceAll("주식", "");
 
-			keywordId = generateKeyword(keywordName, keywordLinkQueue.getLink(), this.agentId);
+			// Keyword Validation, TypeCheck
+			// If keyword is related to Stock.
+			boolean stockKeywordCheck = document.toString()
+					.contains(DataCommon.getValueBy("StockKeywordCheck", parsers));
+			boolean stockKeywordTypeCheck = DataCommon
+					.containValue(DataCommon.getValueBy("StockKeywordTypeCheck", parsers), keywordName);
 
-			Elements elements = document.select(DataCommon.getValueBy("RKeywordList", parsers))
-					.select(DataCommon.getValueBy("RKeywordListElem", parsers));
-			//System.out.println("main keyword = " + keywordName);
-			int correl = 1;
-			for (Element elem : elements) {
-				String link = agentConfig.getSearchQuery() + elem.attr("href");
-				String title = elem.text();
-				
-				int relatedKeywordId = generateKeyword(title, link, this.agentId);
-				
-				if(relatedKeywordId != 0 ){
-					relatedKeywordLinkDao.upsertRelatedKeywordLink(keywordId, relatedKeywordId, correl++);
+			if (stockKeywordCheck || stockKeywordTypeCheck) {
+				if (stockKeywordCheck) {
+					// keywordId = generateStockKeyword
+					stockKeywordId = generateStockKeyword(keywordName, keywordLinkQueue.getLink(), this.agentId, 1);
+				} else if (stockKeywordTypeCheck) {
+					stockKeywordId = generateStockKeyword(keywordName, keywordLinkQueue.getLink(), this.agentId, 2);
 				}
-				 saveKeywordLinkQueue(link, agentId);
+				Elements elements = document.select(DataCommon.getValueBy("RKeywordList", parsers))
+						.select(DataCommon.getValueBy("RKeywordListElem", parsers));
+
+				int correl = 1;
+				for (Element elem : elements) {
+					String title = elem.text().trim().replaceAll("주식", "").replaceAll("주가", "");
+					String link = agentConfig.getSearchQuery() + elem.attr("href");
+					int relatedKeywordId = 0;
+
+					if (DataCommon.containValue(DataCommon.getValueBy("StockKeywordTypeCheck", parsers), title)) {
+						relatedKeywordId = generateStockKeyword(title, link, this.agentId, 2);
+					} else {
+						if (Jsoup.connect(link).get().toString()
+								.contains(DataCommon.getValueBy("StockKeywordCheck", parsers))) {
+							relatedKeywordId = generateStockKeyword(title, link, this.agentId, 1);
+						}
+					}
+					if (relatedKeywordId != 0 && stockKeywordId != 0) {
+						relatedKeywordLinkDao.upsertRelatedKeywordLink(stockKeywordId, relatedKeywordId, correl++);
+						saveKeywordLinkQueue(link,agentId);
+					}
+					
+				}
 			}
+			/*
+			 * keywordId = generateKeyword(keywordName,
+			 * keywordLinkQueue.getLink(), this.agentId);
+			 * 
+			 * Elements elements =
+			 * document.select(DataCommon.getValueBy("RKeywordList", parsers))
+			 * .select(DataCommon.getValueBy("RKeywordListElem", parsers));
+			 * //System.out.println("main keyword = " + keywordName); int correl
+			 * = 1; for (Element elem : elements) { String link =
+			 * agentConfig.getSearchQuery() + elem.attr("href"); String title =
+			 * elem.text();
+			 * 
+			 * int relatedKeywordId = generateKeyword(title, link,
+			 * this.agentId);
+			 * 
+			 * if(relatedKeywordId != 0 ){
+			 * relatedKeywordLinkDao.upsertRelatedKeywordLink(keywordId,
+			 * relatedKeywordId, correl++); } saveKeywordLinkQueue(link,
+			 * agentId); }
+			 */
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.println(agent.getName() + " 키워드 파싱 완료!!");
+
 	}
 
 	/*
@@ -127,12 +180,32 @@ public class AgentKeywordParser extends CommonKeywordParser {
 		// TODO Auto-generated method stub
 		int keywordId = 0;
 		int keywordMainId = keywordMainDao.upsertKeywordMain(keywordName);
-		
+
 		if (keywordMainId != 0) {
 			keywordId = keywordDao.upsertKeyword(keywordName, link, keywordMainId, agentId);
 			System.out.println(keywordMainId + " : " + keywordId + " : " + keywordName);
 		}
 		return keywordId;
 	}
-}
 
+	private int generateStockKeyword(String keywordName, String link, int agentId, int typeId) {
+		int stockKeywordId = 0;
+		int keywordMainId = keywordMainDao.upsertKeywordMain(keywordName);
+
+		if (keywordMainId != 0) {
+			stockKeywordId = stockKeywordDao.upsertKeyword(keywordName, link, keywordMainId, agentId, typeId);
+			System.out.println(keywordMainId + " : " + stockKeywordId + " : " + keywordName + " : " + typeId);
+		}
+		return stockKeywordId;
+	}
+
+	/*
+	 * private int generateStockKeyword(String keywordName, String link, int
+	 * agentId, int typeId){ int keywordId = 0; int keywordMainId =
+	 * keywordMainDao.upsertKeywordMain(keywordName);
+	 * 
+	 * if (keywordMainId != 0){
+	 * 
+	 * } }
+	 */
+}

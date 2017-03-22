@@ -7,4 +7,5 @@ public abstract class CommonKeywordParser {
 	protected abstract int saveKeywordLinkQueue(String link, int agentId);
 	protected abstract void parseRealtimeKeyword();
 	protected abstract void parseKeyword(KeywordLinkQueue keywordLinkQueue);
+	protected abstract void parseStockKeyword(KeywordLinkQueue keywordLinkQueue);
 }

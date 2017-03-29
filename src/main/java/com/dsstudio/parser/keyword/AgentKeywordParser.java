@@ -1,6 +1,7 @@
 package com.dsstudio.parser.keyword;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Date;
@@ -13,6 +14,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import com.dsstudio.helper.DataCommon;
+import com.dsstudio.helper.ParseCommon;
 import com.dsstudio.hibernate.dao.AgentDao;
 import com.dsstudio.hibernate.dao.AgentDaoImpl;
 import com.dsstudio.hibernate.dao.KeywordDao;
@@ -33,6 +35,7 @@ import com.dsstudio.hibernate.model.Agent;
 import com.dsstudio.hibernate.model.AgentConfig;
 import com.dsstudio.hibernate.model.KeywordLinkQueue;
 import com.dsstudio.hibernate.model.Parser;
+import com.dsstudio.parser.stock.StockParser;
 
 public class AgentKeywordParser extends CommonKeywordParser {
 	protected int agentId;
@@ -62,8 +65,8 @@ public class AgentKeywordParser extends CommonKeywordParser {
 	 * com.dsstudio.parser.keyword.CommonKeywordParser#saveKeywordLinkQueue(java
 	 * .lang.String, int)
 	 */
-	protected int saveKeywordLinkQueue(String link, int agentId) {
-		keywordLinkQueueDao.saveIfNotExist(link, agentId);
+	protected int saveKeywordLinkQueue(String link, int agentId, int parentId) {
+		keywordLinkQueueDao.saveIfNotExist(link, agentId, parentId);
 		return 0;
 	}
 
@@ -84,11 +87,10 @@ public class AgentKeywordParser extends CommonKeywordParser {
 	protected void parseKeyword(KeywordLinkQueue keywordLinkQueue) {
 		// TODO Auto-generated method stub
 		parseStockKeyword(keywordLinkQueue);
-		
-	}
 
-	@Override
-	protected void parseStockKeyword(KeywordLinkQueue keywordLinkQueue) {
+	}
+	
+	private void parseStockKeyword(KeywordLinkQueue keywordLinkQueue) {
 		// TODO Auto-generated method stub
 		Agent agent = agentDao.findById(this.agentId);
 		AgentConfig agentConfig = agent.getAgentConfig();
@@ -103,8 +105,10 @@ public class AgentKeywordParser extends CommonKeywordParser {
 					.userAgent(agentConfig.getUserAgent());
 			Document document = connection.get();
 
+			// System.out.println(document.toString().("sItemCode : "));
 			String keywordName = document.select(DataCommon.getValueBy("KeywordField", parsers))
-					.attr(DataCommon.getValueBy("KeywordFieldAttr", parsers)).trim().replaceAll("주가", "").replaceAll("주식", "");
+					.attr(DataCommon.getValueBy("KeywordFieldAttr", parsers)).trim().replaceAll("주가", "")
+					.replaceAll("주식", "");
 
 			// Keyword Validation, TypeCheck
 			// If keyword is related to Stock.
@@ -117,8 +121,13 @@ public class AgentKeywordParser extends CommonKeywordParser {
 				if (stockKeywordCheck) {
 					// keywordId = generateStockKeyword
 					stockKeywordId = generateStockKeyword(keywordName, keywordLinkQueue.getLink(), this.agentId, 1);
+					if (stockKeywordId != 0)
+						new StockParser(document, agent).parseStock(stockKeywordId);
+					relatedKeywordLinkDao.upsertRelatedKeywordLink(keywordLinkQueue.getParentId(), stockKeywordId, 0);
+
 				} else if (stockKeywordTypeCheck) {
 					stockKeywordId = generateStockKeyword(keywordName, keywordLinkQueue.getLink(), this.agentId, 2);
+					relatedKeywordLinkDao.upsertRelatedKeywordLink(keywordLinkQueue.getParentId(), stockKeywordId, 0);
 				}
 				Elements elements = document.select(DataCommon.getValueBy("RKeywordList", parsers))
 						.select(DataCommon.getValueBy("RKeywordListElem", parsers));
@@ -127,21 +136,24 @@ public class AgentKeywordParser extends CommonKeywordParser {
 				for (Element elem : elements) {
 					String title = elem.text().trim().replaceAll("주식", "").replaceAll("주가", "");
 					String link = agentConfig.getSearchQuery() + elem.attr("href");
+					saveKeywordLinkQueue(link, agentId, stockKeywordId);
+					/*
 					int relatedKeywordId = 0;
-
 					if (DataCommon.containValue(DataCommon.getValueBy("StockKeywordTypeCheck", parsers), title)) {
 						relatedKeywordId = generateStockKeyword(title, link, this.agentId, 2);
 					} else {
-						if (Jsoup.connect(link).get().toString()
+						if (Jsoup.connect(link).timeout(agentConfig.getTimeout() * 1000)
+								.userAgent(agentConfig.getUserAgent()).get().toString()
 								.contains(DataCommon.getValueBy("StockKeywordCheck", parsers))) {
 							relatedKeywordId = generateStockKeyword(title, link, this.agentId, 1);
 						}
 					}
 					if (relatedKeywordId != 0 && stockKeywordId != 0) {
 						relatedKeywordLinkDao.upsertRelatedKeywordLink(stockKeywordId, relatedKeywordId, correl++);
-						saveKeywordLinkQueue(link,agentId);
+						saveKeywordLinkQueue(link, agentId);
 					}
-					
+					*/
+
 				}
 			}
 			/*
@@ -171,7 +183,6 @@ public class AgentKeywordParser extends CommonKeywordParser {
 		System.out.println(agent.getName() + " 키워드 파싱 완료!!");
 
 	}
-
 	/*
 	 * 검색어가 현재 디비에 있는 경우 업데이트하며 없을 경우 키워드를 저장합니다. KeywordMain(indexing table),
 	 * Keyword(Agent별 키워드), RelatedKeywordLink(연관 검색어 저장) 테이블에 각각 저장 및 업데이트 됩니다.
@@ -198,6 +209,7 @@ public class AgentKeywordParser extends CommonKeywordParser {
 		}
 		return stockKeywordId;
 	}
+
 
 	/*
 	 * private int generateStockKeyword(String keywordName, String link, int

@@ -65,7 +65,8 @@ public class NaverKeywordParser extends AgentKeywordParser {
 				realtimeKeyword.setUpdatedTime(new Timestamp(new Date().getTime()));
 				realtimeKeywords.add(realtimeKeyword);
 				// realtimeKeywordDao.save(realtimeKeyword);
-				saveKeywordLinkQueue(link, agent.getId());
+				int parentId = 0;
+				saveKeywordLinkQueue(link, agent.getId(), parentId);
 				rank++;
 			}
 			realtimeKeywordDao.saveAll(realtimeKeywords);

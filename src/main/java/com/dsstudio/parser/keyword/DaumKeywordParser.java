@@ -69,7 +69,8 @@ public class DaumKeywordParser extends AgentKeywordParser {
 				realtimeKeyword.setCreatedTime(new Timestamp(new Date().getTime()));
 				realtimeKeyword.setUpdatedTime(new Timestamp(new Date().getTime()));
 				realtimeKeywords.add(realtimeKeyword);
-				saveKeywordLinkQueue(link, agent.getId());
+				int parentId = 0;
+				saveKeywordLinkQueue(link, agent.getId(), parentId);
 				rank++;
 			}
 			realtimeKeywordDao.saveAll(realtimeKeywords);

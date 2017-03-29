@@ -122,6 +122,9 @@
 		<property name="agentId" type="int">
 			<column name = "AgentId"/>
 		</property>
+		<property name="parentId" type="int">
+			<column name = "ParentId"/>
+		</property>
 	</class>
 	
 	<class name="com.dsstudio.hibernate.model.Keyword" table="Keyword" dynamic-update="true">
@@ -175,6 +178,9 @@
 		<property name="typeId" type="int">
 			<column name = "TypeId"/>
 		</property>
+		<property name="status" type="int">
+			<column name = "Status"/>
+		</property>
 	</class>
 	
 	<class name="com.dsstudio.hibernate.model.KeywordMain" table="KeywordMain" dynamic-update="true">
@@ -206,6 +212,55 @@
 		</property>
 		<property name="correl" type="int">
 			<column name = "Correl"/>
+		</property>
+	</class>
+	
+	<class name="com.dsstudio.hibernate.model.Stock" table="Stock">
+		<id name="id" type="int">
+			<column name="Id"/>
+			<generator class="identity"/>
+		</id>
+		<property name="keywordId" type="int">
+			<column name = "KeywordId"/>
+		</property>
+		<property name="name" type="java.lang.String" unique="true" >
+			<column name="Name" />
+		</property>
+		<property name="code" type="int">
+			<column name = "Code"/>
+		</property>
+		<property name="pricePrev" type="int">
+			<column name = "PricePrev"/>
+		</property>
+		<property name="price" type="int">
+			<column name = "Price"/>
+		</property>
+		<property name="priceMax" type="int">
+			<column name = "PriceMax"/>
+		</property>
+		<property name="priceMin" type="int">
+			<column name = "PriceMin"/>
+		</property>
+		<property name="fluct" type="int">
+			<column name = "Fluct"/>
+		</property>
+		<property name="fluctRate" type="double">
+			<column name = "FluctRate"/>
+		</property>
+		<property name="chartDaily" type="java.lang.String">
+			<column name = "ChartDaily"/>
+		</property>
+		<property name="chartWeekly" type="java.lang.String">
+			<column name = "chartWeekly"/>
+		</property>
+		<property name="chartMonthly" type="java.lang.String">
+			<column name = "chartMonthly"/>
+		</property>
+		<property name="dateCreated" type="timestamp">
+			<column name="DateCreated"/>
+		</property>
+		<property name="dateUpdated" type="timestamp">
+			<column name="DateUpdated"/>
 		</property>
 	</class>
 

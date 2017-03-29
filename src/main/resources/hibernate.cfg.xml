@@ -23,6 +23,6 @@
 		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property> 
 
 		<!-- mapping file, we can use Bean annotations too --> 
-		<mapping resource="crawler.hbm.xml" />
+		<mapping resource="resources/crawler.hbm.xml" />
 	</session-factory>
 </hibernate-configuration>

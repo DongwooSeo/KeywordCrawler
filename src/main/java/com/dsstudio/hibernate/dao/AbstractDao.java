@@ -38,7 +38,6 @@ public abstract class AbstractDao <PK extends Serializable, T>{
 		}catch(Exception e){
 			tx.rollback();
 		}
-		
 	}
 	
 	public void update(T entity){

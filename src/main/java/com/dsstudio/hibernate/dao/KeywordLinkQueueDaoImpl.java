@@ -32,7 +32,7 @@ public class KeywordLinkQueueDaoImpl extends AbstractDao<Integer, KeywordLinkQue
 		super.persist(entity);
 	}
 
-	public void saveIfNotExist(String link, int agentId) {
+	public void saveIfNotExist(String link, int agentId, int parentId) {
 
 		Session session = getSession();
 		Transaction tx = null;
@@ -40,6 +40,7 @@ public class KeywordLinkQueueDaoImpl extends AbstractDao<Integer, KeywordLinkQue
 			tx = session.beginTransaction();
 			Criteria crit = session.createCriteria(KeywordLinkQueue.class);
 			crit.add(Restrictions.eq("link", link));
+			crit.add(Restrictions.eq("parentId", parentId));
 
 			KeywordLinkQueue entityKeywordLinkQueue = (KeywordLinkQueue) crit.setMaxResults(1).uniqueResult();
 
@@ -49,6 +50,7 @@ public class KeywordLinkQueueDaoImpl extends AbstractDao<Integer, KeywordLinkQue
 				keywordLinkQueue.setStatus(1);
 				keywordLinkQueue.setDateCreated(new Timestamp(new Date().getTime()));
 				keywordLinkQueue.setAgentId(agentId);
+				keywordLinkQueue.setParentId(parentId);
 				session.save(keywordLinkQueue);
 			}
 			// TODO Auto-generated method stub
@@ -103,8 +105,9 @@ public class KeywordLinkQueueDaoImpl extends AbstractDao<Integer, KeywordLinkQue
 			 * ) .addEntity(KeywordLinkQueue.class);
 			 */
 			Query query = session.createQuery(
-					"from KeywordLinkQueue a where Status = 1 or (BookingDate < :time and status = 2) order by Id");
-			query.setParameter("time", new Timestamp(new Date().getTime() - 10 * 60 * 1000));
+					"from KeywordLinkQueue a where Status = 1 or (BookingDate < :time1 and status = 2) or (BookingDate < :time2 and status = 3) order by status, Id");
+			query.setParameter("time1", new Timestamp(new Date().getTime() - 10 * 60 * 1000));
+			query.setParameter("time2", new Timestamp(new Date().getTime() - 1 * 24 * 60 * 60 * 1000));
 			query.setLockMode("a", LockMode.PESSIMISTIC_WRITE);
 			query.setMaxResults(1);
 

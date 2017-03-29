@@ -10,6 +10,7 @@ public class KeywordLinkQueue{
 	private Timestamp dateCreated;
 	private Timestamp bookingDate;
 	private int agentId;
+	private int parentId;
 	
 
 	public int getId() {
@@ -48,6 +49,11 @@ public class KeywordLinkQueue{
 	public void setAgentId(int agentId) {
 		this.agentId = agentId;
 	}
-	
+	public int getParentId() {
+		return parentId;
+	}
+	public void setParentId(int parentId) {
+		this.parentId = parentId;
+	}
 	
 }

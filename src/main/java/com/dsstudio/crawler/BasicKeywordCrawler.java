@@ -12,7 +12,7 @@ import com.dsstudio.parser.keyword.KeywordParser;
 import com.dsstudio.parser.keyword.NaverKeywordParser;
 
 public class BasicKeywordCrawler extends KeywordCrawler {
-	static final Logger logger = LoggerFactory.getLogger(RealtimeKeywordCrawler.class);
+	static final Logger logger = LoggerFactory.getLogger(BasicKeywordCrawler.class);
 	
 	private List<CommonKeywordParser> commonKeywordParsers = new ArrayList<CommonKeywordParser>();
 	

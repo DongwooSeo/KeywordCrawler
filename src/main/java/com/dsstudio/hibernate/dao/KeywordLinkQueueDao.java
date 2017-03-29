@@ -9,7 +9,7 @@ public interface KeywordLinkQueueDao {
 	KeywordLinkQueue fetchFirstRow();
 	void save(KeywordLinkQueue entity);
 	void saveAll(List<KeywordLinkQueue> keywordLinkQueues);
-	void saveIfNotExist(String link, int agentId);
+	void saveIfNotExist(String link, int agentId, int parentId);
 	void update(KeywordLinkQueue keywordLinkQueue);
 	
 }

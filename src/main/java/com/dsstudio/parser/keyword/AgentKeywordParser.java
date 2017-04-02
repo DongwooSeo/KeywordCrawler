@@ -137,45 +137,8 @@ public class AgentKeywordParser extends CommonKeywordParser {
 					String title = elem.text().trim().replaceAll("주식", "").replaceAll("주가", "");
 					String link = agentConfig.getSearchQuery() + elem.attr("href");
 					saveKeywordLinkQueue(link, agentId, stockKeywordId);
-					/*
-					int relatedKeywordId = 0;
-					if (DataCommon.containValue(DataCommon.getValueBy("StockKeywordTypeCheck", parsers), title)) {
-						relatedKeywordId = generateStockKeyword(title, link, this.agentId, 2);
-					} else {
-						if (Jsoup.connect(link).timeout(agentConfig.getTimeout() * 1000)
-								.userAgent(agentConfig.getUserAgent()).get().toString()
-								.contains(DataCommon.getValueBy("StockKeywordCheck", parsers))) {
-							relatedKeywordId = generateStockKeyword(title, link, this.agentId, 1);
-						}
-					}
-					if (relatedKeywordId != 0 && stockKeywordId != 0) {
-						relatedKeywordLinkDao.upsertRelatedKeywordLink(stockKeywordId, relatedKeywordId, correl++);
-						saveKeywordLinkQueue(link, agentId);
-					}
-					*/
-
 				}
 			}
-			/*
-			 * keywordId = generateKeyword(keywordName,
-			 * keywordLinkQueue.getLink(), this.agentId);
-			 * 
-			 * Elements elements =
-			 * document.select(DataCommon.getValueBy("RKeywordList", parsers))
-			 * .select(DataCommon.getValueBy("RKeywordListElem", parsers));
-			 * //System.out.println("main keyword = " + keywordName); int correl
-			 * = 1; for (Element elem : elements) { String link =
-			 * agentConfig.getSearchQuery() + elem.attr("href"); String title =
-			 * elem.text();
-			 * 
-			 * int relatedKeywordId = generateKeyword(title, link,
-			 * this.agentId);
-			 * 
-			 * if(relatedKeywordId != 0 ){
-			 * relatedKeywordLinkDao.upsertRelatedKeywordLink(keywordId,
-			 * relatedKeywordId, correl++); } saveKeywordLinkQueue(link,
-			 * agentId); }
-			 */
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

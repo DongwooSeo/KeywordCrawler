@@ -3,7 +3,6 @@ package com.dsstudio.app;
 import com.dsstudio.crawler.BasicKeywordCrawler;
 import com.dsstudio.crawler.CrawlConfig;
 import com.dsstudio.crawler.CrawlController;
-import com.dsstudio.crawler.RealtimeKeywordCrawler;
 import com.dsstudio.crawler.UpdateKeywordCrawler;
 
 public class AppMain {
@@ -15,7 +14,7 @@ public class AppMain {
 		
 		//Starting RealtimeKeywordCrawler by passing a class with two threads.
 		//controller.startNonBlocking(RealtimeKeywordCrawler.class, 2);
-		//controller.startNonBlocking(BasicKeywordCrawler.class, 6);
-		controller.startNonBlocking(UpdateKeywordCrawler.class, 6);
+		controller.startNonBlocking(BasicKeywordCrawler.class, 6);
+		//controller.startNonBlocking(UpdateKeywordCrawler.class, 6);
 	}
 }

@@ -1,17 +1,17 @@
 package com.dsstudio.crawler;
 
 public class CrawlConfig {
-	
+
 	private int threadMonitoringDelaySeconds = 10;
-	
+
 	private boolean shutdownOnEmptyQueue = true;
-	
+
 	private int threadShutdownDelaySeconds = 10;
 
 	private int cleanupDelaySeconds = 10;
 
 	private int maxPagesToFetch = -1;
-	
+
 	public int getThreadMonitoringDelaySeconds() {
 		return threadMonitoringDelaySeconds;
 	}
@@ -48,6 +48,5 @@ public class CrawlConfig {
 		// TODO Auto-generated method stub
 		return maxPagesToFetch;
 	}
-	
-	
+
 }

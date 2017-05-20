@@ -9,50 +9,72 @@ import com.dsstudio.hibernate.dao.KeywordLinkQueueDaoImpl;
 import com.dsstudio.hibernate.model.Agent;
 import com.dsstudio.hibernate.model.KeywordLinkQueue;
 
-public class Parser implements Runnable{
+public class Parser implements Runnable {
 
-	private List<AgentParser> agentParsers;
-	private AgentDao agentDao = new AgentDaoImpl();
-	private static KeywordLinkQueueDao keywordLinkQueueDao = new KeywordLinkQueueDaoImpl();
+    private List<AgentParser> agentParsers;
+    private AgentParser agentParser = null;
+    private AgentDao agentDao = new AgentDaoImpl();
+    private KeywordLinkQueue keywordLinkQueue;
+    private static KeywordLinkQueueDao keywordLinkQueueDao = new KeywordLinkQueueDaoImpl();
 
-	public Parser(List<AgentParser> agentParsers){
-		this.agentParsers = agentParsers;
-	}
-	
-	public static synchronized KeywordLinkQueue crawlableLinkQueue() {
-		KeywordLinkQueue keywordLinkQueue = keywordLinkQueueDao.fetchFirstRow();
-		return keywordLinkQueue;
-	}
-	
-	public void run() {
-		// TODO Auto-generated method stub
-		AgentParser agentParser = null;
-		Agent agent = null;
-		while (true) {
-			System.out.println(Thread.currentThread() + " 작동중");
-			KeywordLinkQueue keywordLinkQueue = crawlableLinkQueue();
-			if (keywordLinkQueue != null) {
-				for (AgentParser _agentParser : agentParsers) {
-					if (keywordLinkQueue.getAgentId() == _agentParser.getAgentId())
-						agentParser = _agentParser;
-				}
-				if (agentParser != null) {
-					agent = agentDao.findById(agentParser.getAgentId());
-					if (agent.getIsUsed() == 1) {
-						System.out.println("키워드 크롤링 시작!");
-						agentParser.parse(keywordLinkQueue);
-						keywordLinkQueue.setStatus(3);
-						keywordLinkQueueDao.update(keywordLinkQueue);
-					}
-				}
-			}
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
+    public Parser(List<AgentParser> agentParsers) {
+        this.agentParsers = agentParsers;
+    }
 
+
+    public void run() {
+        // TODO Auto-generated method stub
+        while (true) {
+            System.out.println(Thread.currentThread() + " 작동중");
+
+            keywordLinkQueue = getCrawlableLinkQueue();
+
+            if (!checkParsingAvailability())
+                return;
+
+            if (getAgentFromAgentParser().getIsUsed() == 1) {
+                System.out.println("키워드 크롤링 시작!");
+                parseFromKeywordLinkQueue();
+                parseFinishedByKeywordLinkQueue();
+            }
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private boolean checkParsingAvailability() {
+        return keywordLinkQueue != null && getAgentParserMatchedFromKeywordLinkQueue();
+    }
+
+    private Agent getAgentFromAgentParser() {
+        return agentDao.findById(agentParser.getAgentId());
+    }
+
+    private void parseFromKeywordLinkQueue() {
+        agentParser.parse(keywordLinkQueue);
+    }
+
+    private boolean getAgentParserMatchedFromKeywordLinkQueue() {
+        for (AgentParser agentParser : agentParsers) {
+            if (keywordLinkQueue.getAgentId() == agentParser.getAgentId()) {
+                this.agentParser = agentParser;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void parseFinishedByKeywordLinkQueue() {
+        keywordLinkQueue.setStatus(3);
+        keywordLinkQueueDao.update(keywordLinkQueue);
+    }
+
+    public static synchronized KeywordLinkQueue getCrawlableLinkQueue() {
+        KeywordLinkQueue keywordLinkQueue = keywordLinkQueueDao.fetchFirstRow();
+        return keywordLinkQueue;
+    }
 }

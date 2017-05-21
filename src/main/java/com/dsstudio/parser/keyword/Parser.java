@@ -21,7 +21,6 @@ public class Parser implements Runnable {
         this.agentParsers = agentParsers;
     }
 
-
     public void run() {
         // TODO Auto-generated method stub
         while (true) {
@@ -30,12 +29,11 @@ public class Parser implements Runnable {
             keywordLinkQueue = getCrawlableLinkQueue();
 
             if (!checkParsingAvailability())
-                return;
+                continue;
 
             if (getAgentFromAgentParser().getIsUsed() == 1) {
-                System.out.println("키워드 크롤링 시작!");
                 parseFromKeywordLinkQueue();
-                parseFinishedByKeywordLinkQueue();
+                parseFinishedFromKeywordLinkQueue();
             }
             try {
                 Thread.sleep(2000);
@@ -68,12 +66,12 @@ public class Parser implements Runnable {
         return false;
     }
 
-    private void parseFinishedByKeywordLinkQueue() {
+    private void parseFinishedFromKeywordLinkQueue() {
         keywordLinkQueue.setStatus(3);
         keywordLinkQueueDao.update(keywordLinkQueue);
     }
 
-    public static synchronized KeywordLinkQueue getCrawlableLinkQueue() {
+    private static synchronized KeywordLinkQueue getCrawlableLinkQueue() {
         KeywordLinkQueue keywordLinkQueue = keywordLinkQueueDao.fetchFirstRow();
         return keywordLinkQueue;
     }

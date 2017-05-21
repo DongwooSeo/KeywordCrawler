@@ -31,11 +31,11 @@ public class ParserSelector implements Runnable {
             if (keywordLinkQueue==null)
                 continue;
 
-            AgentParser agentParser = getAgentParserFrom(keywordLinkQueue);
+            AgentParser agentParser = getAgentParserBy(keywordLinkQueue);
 
             if (getAgentFrom(agentParser).getIsUsed() == 1) {
-                parseAgentPageFrom(agentParser, keywordLinkQueue);
-                setStatusFinishedTo(keywordLinkQueue);
+                parseAgentPageBy(agentParser, keywordLinkQueue);
+                setStatusFinishedOf(keywordLinkQueue);
             }
 
             try {
@@ -51,7 +51,7 @@ public class ParserSelector implements Runnable {
         return agentDao.findById(agentParser.getAgentId());
     }
 
-    private AgentParser getAgentParserFrom(KeywordLinkQueue keywordLinkQueue) {
+    private AgentParser getAgentParserBy(KeywordLinkQueue keywordLinkQueue) {
         AgentParser _agentParser = null;
         for (AgentParser agentParser : agentParsers) {
             if (keywordLinkQueue.getAgentId() == agentParser.getAgentId()) {
@@ -65,11 +65,11 @@ public class ParserSelector implements Runnable {
         KeywordLinkQueue keywordLinkQueue = keywordLinkQueueDao.fetchFirstRow();
         return keywordLinkQueue;
     }
-    private void parseAgentPageFrom(AgentParser agentParser, KeywordLinkQueue keywordLinkQueue) {
+    private void parseAgentPageBy(AgentParser agentParser, KeywordLinkQueue keywordLinkQueue) {
         agentParser.parse(keywordLinkQueue);
     }
 
-    private void setStatusFinishedTo(KeywordLinkQueue keywordLinkQueue) {
+    private void setStatusFinishedOf(KeywordLinkQueue keywordLinkQueue) {
         keywordLinkQueue.setStatus(3);
         keywordLinkQueueDao.update(keywordLinkQueue);
     }

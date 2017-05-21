@@ -24,7 +24,6 @@ import com.dsstudio.hibernate.model.Agent;
 import com.dsstudio.hibernate.model.AgentConfig;
 import com.dsstudio.hibernate.model.KeywordLinkQueue;
 import com.dsstudio.hibernate.model.Parser;
-import com.dsstudio.parser.stock.NaverStockParser;
 import com.dsstudio.parser.stock.StockParser;
 
 public class NaverStockKeywordParser implements KeywordParsable {
@@ -48,19 +47,15 @@ public class NaverStockKeywordParser implements KeywordParsable {
 	public void parse(KeywordLinkQueue keywordLinkQueue) {
 		// TODO Auto-generated method stub
 		AgentConfig agentConfig = agent.getAgentConfig();
-		int stockKeywordId = 0;
+		int stockKeywordId;
 
 		try {
 			System.out.println(agent.getName() + " 키워드 파싱 시작!!");
 			// System.out.println(keywordLinkQueue.getLink());
-			Connection connection = Jsoup.connect(keywordLinkQueue.getLink()).timeout(agentConfig.getTimeout() * 1000)
-					.userAgent(agentConfig.getUserAgent());
-			Document document = connection.get();
+			Document document = getDocumentBy(keywordLinkQueue, agentConfig);
 
 			// System.out.println(document.toString().("sItemCode : "));
-			String keywordName = document.select(DataCommon.getValueBy("KeywordField", parsers))
-					.attr(DataCommon.getValueBy("KeywordFieldAttr", parsers)).trim().replaceAll("주가", "")
-					.replaceAll("주식", "");
+			String keywordName = getKeywordNameFrom(document);
 
 			if (document.toString().contains(DataCommon.getValueBy("StockKeywordCheck", parsers))) {
 				stockKeywordId = generateStockKeyword(keywordName, keywordLinkQueue.getLink(), agent.getId(), 1);
@@ -88,6 +83,18 @@ public class NaverStockKeywordParser implements KeywordParsable {
 			e.printStackTrace();
 		}
 		System.out.println(agent.getName() + " 키워드 파싱 완료!!");
+	}
+
+	private String getKeywordNameFrom(Document document) {
+		return document.select(DataCommon.getValueBy("KeywordField", parsers))
+                        .attr(DataCommon.getValueBy("KeywordFieldAttr", parsers)).trim().replaceAll("주가", "")
+                        .replaceAll("주식", "");
+	}
+
+	private Document getDocumentBy(KeywordLinkQueue keywordLinkQueue, AgentConfig agentConfig) throws IOException {
+		Connection connection = Jsoup.connect(keywordLinkQueue.getLink()).timeout(agentConfig.getTimeout() * 1000)
+                .userAgent(agentConfig.getUserAgent());
+		return connection.get();
 	}
 
 	private int saveKeywordLinkQueue(String link, int agentId, int parentId) {

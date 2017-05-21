@@ -51,7 +51,6 @@ public class NaverStockKeywordParser implements KeywordParser {
     public void parse(KeywordLinkQueue keywordLinkQueue) {
         // TODO Auto-generated method stub
         AgentConfig agentConfig = agent.getAgentConfig();
-        int stockKeywordId;
 
         try {
             System.out.println(agent.getName() + " 키워드 파싱 시작!!");
@@ -62,16 +61,15 @@ public class NaverStockKeywordParser implements KeywordParser {
             String keywordName = getKeywordNameFrom(document);
 
             int stockKeywordType = getStockKeywordType(pageHtml, keywordName);
-
-            if(stockKeywordType==NOT_A_STOCK_KEYWORD)
+            if(stockKeywordType==NOT_A_STOCK_KEYWORD) {
                 return;
+            }
 
-            stockKeywordId = generateStockKeyword(keywordName, keywordLinkQueue.getLink(), agent.getId(), stockKeywordType);
-
+            int stockKeywordId = generateStockKeyword(keywordName, keywordLinkQueue, agent.getId(), stockKeywordType);
             if(stockKeywordType==STOCK_KEYWORD)
                 stockParser.parseStock(document, stockKeywordId, agent, parsers);
 
-            parseRelatedKeyword(keywordLinkQueue, agentConfig, stockKeywordId, document);
+            parseRelatedKeywords(keywordLinkQueue, agentConfig, stockKeywordId, document);
 
         } catch (IOException e) {
             // TODO Auto-generated catch block
@@ -80,7 +78,7 @@ public class NaverStockKeywordParser implements KeywordParser {
         System.out.println(agent.getName() + " 키워드 파싱 완료!!");
     }
 
-    private void parseRelatedKeyword(KeywordLinkQueue keywordLinkQueue, AgentConfig agentConfig, int stockKeywordId, Document document) {
+    private void parseRelatedKeywords(KeywordLinkQueue keywordLinkQueue, AgentConfig agentConfig, int stockKeywordId, Document document) {
         relatedKeywordLinkDao.upsertRelatedKeywordLink(keywordLinkQueue.getParentId(), stockKeywordId, 0);
 
         String relKeywordList = DataCommon.getValueBy("RKeywordList", parsers);
@@ -112,10 +110,11 @@ public class NaverStockKeywordParser implements KeywordParser {
         return 0;
     }
 
-    private int generateStockKeyword(String keywordName, String link, int agentId, int typeId) {
+    private int generateStockKeyword(String keywordName, KeywordLinkQueue keywordLinkQueue, int agentId, int typeId) {
+        String link = keywordLinkQueue.getLink();
+
         int stockKeywordId = 0;
         int keywordMainId = keywordMainDao.upsertKeywordMain(keywordName);
-
         if (keywordMainId != 0) {
             stockKeywordId = stockKeywordDao.upsertKeyword(keywordName, link, keywordMainId, agentId, typeId);
             System.out.println(keywordMainId + " : " + stockKeywordId + " : " + keywordName + " : " + typeId);

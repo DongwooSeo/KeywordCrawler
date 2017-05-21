@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import com.dsstudio.parser.keyword.AgentParser;
 import com.dsstudio.parser.keyword.NaverParser;
-import com.dsstudio.parser.keyword.Parser;
+import com.dsstudio.parser.keyword.ParserSelector;
 
 public class BasicKeywordCrawler extends KeywordCrawler {
 	static final Logger logger = LoggerFactory.getLogger(BasicKeywordCrawler.class);
@@ -22,6 +22,6 @@ public class BasicKeywordCrawler extends KeywordCrawler {
 	public void run() {
 		// TODO Auto-generated method stub
 		// 파싱 시작!
-		new Thread(new Parser(agentParsers)).start();
+		new Thread(new ParserSelector(agentParsers)).start();
 	}
 }

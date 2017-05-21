@@ -9,16 +9,16 @@ import com.dsstudio.hibernate.dao.KeywordLinkQueueDaoImpl;
 import com.dsstudio.hibernate.model.Agent;
 import com.dsstudio.hibernate.model.KeywordLinkQueue;
 
-public class Parser implements Runnable {
+public class ParserSelector implements Runnable {
 
+    private static KeywordLinkQueueDao keywordLinkQueueDao;
     private List<AgentParser> agentParsers;
-    private AgentParser agentParser = null;
-    private AgentDao agentDao = new AgentDaoImpl();
-    private KeywordLinkQueue keywordLinkQueue;
-    private static KeywordLinkQueueDao keywordLinkQueueDao = new KeywordLinkQueueDaoImpl();
+    private AgentDao agentDao;
 
-    public Parser(List<AgentParser> agentParsers) {
+    public ParserSelector(List<AgentParser> agentParsers) {
         this.agentParsers = agentParsers;
+        this.agentDao = new AgentDaoImpl();
+        this.keywordLinkQueueDao = new KeywordLinkQueueDaoImpl();
     }
 
     public void run() {
@@ -26,15 +26,18 @@ public class Parser implements Runnable {
         while (true) {
             System.out.println(Thread.currentThread() + " 작동중");
 
-            keywordLinkQueue = getCrawlableLinkQueue();
+            KeywordLinkQueue keywordLinkQueue = getCrawlableLinkQueue();
 
-            if (!checkParsingAvailability())
+            if (keywordLinkQueue==null)
                 continue;
 
-            if (getAgentFromAgentParser().getIsUsed() == 1) {
-                parseFromKeywordLinkQueue();
-                parseFinishedFromKeywordLinkQueue();
+            AgentParser agentParser = getAgentParserFrom(keywordLinkQueue);
+
+            if (getAgentFrom(agentParser).getIsUsed() == 1) {
+                parseAgentPageFrom(agentParser, keywordLinkQueue);
+                setStatusFinishedTo(keywordLinkQueue);
             }
+
             try {
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
@@ -44,35 +47,30 @@ public class Parser implements Runnable {
         }
     }
 
-    private boolean checkParsingAvailability() {
-        return keywordLinkQueue != null && getAgentParserMatchedFromKeywordLinkQueue();
-    }
-
-    private Agent getAgentFromAgentParser() {
+    private Agent getAgentFrom(AgentParser agentParser) {
         return agentDao.findById(agentParser.getAgentId());
     }
 
-    private void parseFromKeywordLinkQueue() {
-        agentParser.parse(keywordLinkQueue);
-    }
-
-    private boolean getAgentParserMatchedFromKeywordLinkQueue() {
+    private AgentParser getAgentParserFrom(KeywordLinkQueue keywordLinkQueue) {
+        AgentParser _agentParser = null;
         for (AgentParser agentParser : agentParsers) {
             if (keywordLinkQueue.getAgentId() == agentParser.getAgentId()) {
-                this.agentParser = agentParser;
-                return true;
+                _agentParser = agentParser;
             }
         }
-        return false;
-    }
-
-    private void parseFinishedFromKeywordLinkQueue() {
-        keywordLinkQueue.setStatus(3);
-        keywordLinkQueueDao.update(keywordLinkQueue);
+        return _agentParser;
     }
 
     private static synchronized KeywordLinkQueue getCrawlableLinkQueue() {
         KeywordLinkQueue keywordLinkQueue = keywordLinkQueueDao.fetchFirstRow();
         return keywordLinkQueue;
+    }
+    private void parseAgentPageFrom(AgentParser agentParser, KeywordLinkQueue keywordLinkQueue) {
+        agentParser.parse(keywordLinkQueue);
+    }
+
+    private void setStatusFinishedTo(KeywordLinkQueue keywordLinkQueue) {
+        keywordLinkQueue.setStatus(3);
+        keywordLinkQueueDao.update(keywordLinkQueue);
     }
 }

@@ -7,24 +7,24 @@ import com.dsstudio.hibernate.model.KeywordLinkQueue;
 
 public abstract class AgentParser {
 	
-	protected List<KeywordParsable> parsers;
+	protected List<KeywordParser> parsers;
 	protected int agentId;
 	protected String agentName;
 	
 	public AgentParser() {
-		parsers = new ArrayList<KeywordParsable>();
+		parsers = new ArrayList<KeywordParser>();
 	}
 
 	public int getAgentId() {
 		return agentId;
 	}
 
-	protected void addParser(KeywordParsable parser){
+	protected void addParser(KeywordParser parser){
 		this.parsers.add(parser);
 	}
 	
 	public void parse(KeywordLinkQueue keywordLinkQueue){
-		for(KeywordParsable parser : parsers){
+		for(KeywordParser parser : parsers){
 			parser.parse(keywordLinkQueue);
 		}
 	}

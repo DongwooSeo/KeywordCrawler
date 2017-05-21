@@ -25,7 +25,7 @@ import com.dsstudio.hibernate.model.KeywordLinkQueue;
 import com.dsstudio.hibernate.model.Parser;
 import com.dsstudio.hibernate.model.RealtimeKeyword;
 
-public class NaverRealtimeKeywordParser implements KeywordParsable {
+public class NaverRealtimeKeywordParser implements KeywordParser {
 	private Agent agent;
 	private List<Parser> parsers;
 	

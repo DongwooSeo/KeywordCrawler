@@ -35,7 +35,7 @@ public class KeywordMainDaoImpl extends AbstractDao<Integer, KeywordMain> implem
 		super.update(keywordMain);
 	}
 
-	public int upsertKeywordMain(String keywordName) {
+	public int saveKeywordMain(String keywordName) {
 		// TODO Auto-generated method stub
 		int keywordMainId = 0;
 

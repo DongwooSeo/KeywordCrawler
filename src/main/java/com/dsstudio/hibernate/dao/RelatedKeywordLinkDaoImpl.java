@@ -55,7 +55,7 @@ public class RelatedKeywordLinkDaoImpl extends AbstractDao<Integer, RelatedKeywo
 		tx.commit();
 	}
 
-	public void upsertRelatedKeywordLink(int keywordId, int relatedId, int correl) {
+	public void saveRelatedKeyword(int keywordId, int relatedId, int correl) {
 		// TODO Auto-generated method stub
 		Session session = getSession();
 		Transaction tx = null;

@@ -1,8 +1,6 @@
-package com.dsstudio.parser.stock;
+package com.dsstudio.parsers.stock;
 
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 
 import org.jsoup.Jsoup;
@@ -10,16 +8,11 @@ import org.jsoup.nodes.Document;
 
 import com.dsstudio.helper.DataCommon;
 import com.dsstudio.helper.ParseCommon;
-import com.dsstudio.hibernate.dao.AgentDao;
-import com.dsstudio.hibernate.dao.AgentDaoImpl;
-import com.dsstudio.hibernate.dao.ParserDao;
-import com.dsstudio.hibernate.dao.ParserDaoImpl;
 import com.dsstudio.hibernate.dao.StockDao;
 import com.dsstudio.hibernate.dao.StockDaoImpl;
 import com.dsstudio.hibernate.model.Agent;
 import com.dsstudio.hibernate.model.AgentConfig;
 import com.dsstudio.hibernate.model.Parser;
-import com.dsstudio.hibernate.model.Stock;
 
 public class NaverStockParser implements StockParser {
 

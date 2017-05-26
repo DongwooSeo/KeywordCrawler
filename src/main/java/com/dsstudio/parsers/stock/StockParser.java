@@ -1,4 +1,4 @@
-package com.dsstudio.parser.stock;
+package com.dsstudio.parsers.stock;
 
 import java.util.List;
 

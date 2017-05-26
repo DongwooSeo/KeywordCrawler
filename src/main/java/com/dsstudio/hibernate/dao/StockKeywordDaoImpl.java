@@ -52,7 +52,7 @@ public class StockKeywordDaoImpl extends AbstractDao<Integer, StockKeyword> impl
 		}
 		return stockKeyword;
 	}
-	public int upsertKeyword(String keywordName, String link, int keywordMainId, int agentId, int typeId) {
+	public int saveKeyword(String keywordName, String link, int keywordMainId, int agentId, int typeId) {
 		int stockKeywordId = 0;
 
 		Session session = getSession();

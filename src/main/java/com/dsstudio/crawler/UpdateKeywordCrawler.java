@@ -6,8 +6,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.dsstudio.parser.stock.NaverStockParser;
-import com.dsstudio.parser.stock.StockParser;
+import com.dsstudio.parsers.stock.NaverStockParser;
+import com.dsstudio.parsers.stock.StockParser;
 import com.dsstudio.updater.KeywordUpdatable;
 import com.dsstudio.updater.Updater;
 import com.dsstudio.updater.StockKeywordUpdater;

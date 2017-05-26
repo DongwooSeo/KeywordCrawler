@@ -1,4 +1,4 @@
-package com.dsstudio.parser.keyword;
+package com.dsstudio.parsers.keyword;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -84,6 +84,34 @@ public class NaverRealtimeKeywordParser implements KeywordParser {
 	}
 	private int saveKeywordLinkQueue(String link, int agentId, int parentId) {
 		keywordLinkQueueDao.saveIfNotExist(link, agentId, parentId);
+		return 0;
+	}
+
+	public String parseKeyword(Document document) {
+		return null;
+	}
+
+	public void parseRelatedKeywords(int parentId, AgentConfig agentConfig, int stockKeywordId, Document document) {
+
+	}
+
+	public int generateKeyword(String keywordName, String link, int agentId, int keywordType) {
+		return 0;
+	}
+
+	public int generateKeyword(Document document, String link, int agentId, int keywordType) {
+		return 0;
+	}
+
+	public int generateKeyword(Document document, int stockKeywordId, Agent agent, int keywordType) {
+		return 0;
+	}
+
+	public void generateKeyword() {
+
+	}
+
+	public int checkKeywordTypeBy(Document document, String keywordName) {
 		return 0;
 	}
 }

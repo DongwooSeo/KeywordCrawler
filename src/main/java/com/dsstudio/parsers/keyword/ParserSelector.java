@@ -1,4 +1,4 @@
-package com.dsstudio.parser.keyword;
+package com.dsstudio.parsers.keyword;
 
 import java.util.List;
 
@@ -34,8 +34,9 @@ public class ParserSelector implements Runnable {
             AgentParser agentParser = getAgentParserBy(keywordLinkQueue);
 
             if (getAgentFrom(agentParser).getIsUsed() == 1) {
-                parseAgentPageBy(agentParser, keywordLinkQueue);
-                setStatusFinishedOf(keywordLinkQueue);
+                agentParser.executeParsing(keywordLinkQueue);
+                keywordLinkQueue.setStatus(3);
+                keywordLinkQueueDao.update(keywordLinkQueue);
             }
 
             try {
@@ -64,13 +65,5 @@ public class ParserSelector implements Runnable {
     private static synchronized KeywordLinkQueue getCrawlableLinkQueue() {
         KeywordLinkQueue keywordLinkQueue = keywordLinkQueueDao.fetchFirstRow();
         return keywordLinkQueue;
-    }
-    private void parseAgentPageBy(AgentParser agentParser, KeywordLinkQueue keywordLinkQueue) {
-        agentParser.parse(keywordLinkQueue);
-    }
-
-    private void setStatusFinishedOf(KeywordLinkQueue keywordLinkQueue) {
-        keywordLinkQueue.setStatus(3);
-        keywordLinkQueueDao.update(keywordLinkQueue);
     }
 }

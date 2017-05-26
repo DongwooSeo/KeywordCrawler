@@ -1,7 +1,6 @@
 package com.dsstudio.updater;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.jsoup.Connection;
@@ -18,7 +17,7 @@ import com.dsstudio.hibernate.model.Agent;
 import com.dsstudio.hibernate.model.AgentConfig;
 import com.dsstudio.hibernate.model.Parser;
 import com.dsstudio.hibernate.model.StockKeyword;
-import com.dsstudio.parser.stock.StockParser;
+import com.dsstudio.parsers.stock.StockParser;
 
 public class StockKeywordUpdater implements KeywordUpdatable {
 	private static StockKeywordDao stockKeywordDao = new StockKeywordDaoImpl();
